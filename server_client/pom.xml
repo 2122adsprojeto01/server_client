@@ -31,6 +31,45 @@
 			<version>${test.util.version}</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.ini4j/ini4j -->
+		<dependency>
+    		<groupId>org.ini4j</groupId>
+    		<artifactId>ini4j</artifactId>
+    		<version>0.5.4</version>
+		</dependency>
+		
+		<!-- trying this https://www.twilio.com/blog/improve-workflow-github-api-java -->
+  		<dependency>
+    		<groupId>com.fasterxml.jackson.core</groupId>
+    	    <artifactId>jackson-databind</artifactId>
+    	    <version>2.11.2</version>
+    	</dependency>
+    	
+    	
+    	<!-- email -->
+    	<dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/net.sourceforge.owlapi/owlapi -->
+		<dependency>
+    		<groupId>net.sourceforge.owlapi</groupId>
+   			<artifactId>owlapi-distribution</artifactId>
+    		<version>5.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.5</version>
+		</dependency>
 	</dependencies>
 	
 	<build>
