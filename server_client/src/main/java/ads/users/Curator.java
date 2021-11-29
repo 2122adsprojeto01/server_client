@@ -158,10 +158,10 @@ public class Curator {
 	//Maybe should be moved to a proper test area
 	public static void main(String[] args) {
 		System.out.println(Curator.getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), GitHubRestAPI.getMainBranchName()));
-		System.out.println(Curator.getLatestTag());
-		List<String> branches = Curator.getBranchesNames();
-		for(String branch : branches)
-			System.out.println(branch);
+		//System.out.println(Curator.getLatestTag());
+		//List<String> branches = Curator.getBranchesNames();
+		//for(String branch : branches)
+		//	System.out.println(branch);
 		//System.out.println(Curator.rejectChange("sicpo1@iscte-iul.pt", "2021-11-20T19_03_18.419847800@sicpo1@iscte-iul.pt", "Changes not accepted because..."));
 		//System.out.println(Curator.acceptChange("sicpo1@iscte-iul.pt", "2021-11-20T19_24_00.948490@sicpo1@iscte-iul.pt", "The changes you made were accepted", "0.1"));
 		//String content = "did some changes";
