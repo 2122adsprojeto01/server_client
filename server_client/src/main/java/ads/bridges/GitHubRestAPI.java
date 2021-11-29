@@ -291,7 +291,9 @@ public class GitHubRestAPI {
                 "sha", getBranchSHA(branch));
 		try {
 			String requestBody = objectMapper.writeValueAsString(createBranchMap);
-			post("/git/refs", requestBody);
+			System.out.println(requestBody);
+			HttpResponse<String> test = post("/git/refs", requestBody);
+			System.out.println(test);
 			return new_branch_name;
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
