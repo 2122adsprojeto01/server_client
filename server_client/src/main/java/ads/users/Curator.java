@@ -157,17 +157,37 @@ public class Curator {
 	
 	
 	
-	
+	/**
+	 * Gets the content of the owl file from the main branch
+	 * <p>
+	 * Added just so the frontend doesn't need to call the GitHubRestAPI
+	 * @return String with the content of the file
+	 * @since 0.2
+	 */
 	public static String getFileContentFromMainBranch() {
 		return getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), GitHubRestAPI.getMainBranchName());
 	}
 	
 	
+	
+	/**
+	 * Checks if an email belongs to a curator
+	 * <p>
+	 * Added just so the frontend doesn't need to call the GitHubRestAPI
+	 * @return boolean with the answer
+	 * @since 0.2
+	 */
 	public static boolean isCurator(String email) {
 		return GitHubRestAPI.isCurator(email);
 	}
 	
-	
+	/**
+	 * Gets the content of the owl file from a branch
+	 * <p>
+	 * Added just so the frontend doesn't need to call the GitHubRestAPI
+	 * @return String with the content of the file
+	 * @since 0.2
+	 */
 	public static String getFileContentFromBranch(String branch) {
 		return getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), branch);
 	}

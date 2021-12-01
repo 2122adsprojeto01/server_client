@@ -25,17 +25,34 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ads.configurations.SiteConfigurations;
 import ads.users.Curator;
 
+/**
+ * A class that makes the bridge between the client requests and the appropriate user class
+ * @author Susana Polido
+ * @version 0.1
+ */
+
 public class FrontEndBridge {
 	private static ObjectMapper objectMapper = new ObjectMapper();
 	private String uri;
 	
+	/**
+	 * Creates the object from the location of the frontend site
+	 * @param uri
+	 * @since 0.1
+	 */
 	public FrontEndBridge(String uri) {
 		this.uri = uri;
 	}
 	
 	
+	
+	/**
+	 * Connects to the site through a get request that receives a message from a frontend client.
+	 * It figures out what that message is asking and calls the appropriate 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public void connectJavaClient() throws IOException, InterruptedException {
-		//.uri(URI.create("https://ads2122projeto01.herokuapp.com/server_client"))
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 			      .uri(URI.create(uri+"/server_client"))
@@ -60,6 +77,7 @@ public class FrontEndBridge {
 			case "changeCuratorBranch":
 				sendOtherBranchContent(body);
 				break;
+				
 			case "curatorAction":
 				String action = objectMapper.readTree(body)
 							.get("data")
@@ -84,6 +102,15 @@ public class FrontEndBridge {
 			
 	}
 	
+	/**
+	 * Sends the reply when the received message has a type of request it doesn't recognise
+	 * <p>
+	 * It should never be used
+	 * @param body of the received message
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @since 0.1
+	 */
 	private void unknownRequest(String body) throws ClientProtocolException, IOException {
 		String id = objectMapper.readTree(body)
 				.get("client_id")
@@ -100,6 +127,18 @@ public class FrontEndBridge {
 		CloseableHttpResponse response2 = httpclient.execute(httppost);
 	}
 	
+	
+	/**
+	 * Used when someone is trying to enter the curator area
+	 * <p>
+	 * If the curator email is valid it sends them to the curator page, otherwise it warns them the email isn't valid
+	 * <p>
+	 * Uses the Curator class
+	 * @param body of the received message
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @since 0.1
+	 */
 	private void sendCuratorIsValidResponse(String body) throws ClientProtocolException, IOException {
 		String email = objectMapper.readTree(body)
 				.get("data")
@@ -113,28 +152,9 @@ public class FrontEndBridge {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("id", id));
 		if(Curator.isCurator(email)) {
-			params.add(new BasicNameValuePair("nextPage", "curator"));
+			addCuratorParameters(params);
 			params.add(new BasicNameValuePair("email", email));
 			params.add(new BasicNameValuePair("message", ""));
-			params.add(new BasicNameValuePair("currversion", Curator.getLatestTag()));
-			
-			if(Curator.getBranchesNames().size() > 1) {
-				for(String branch : Curator.getBranchesNames())
-					params.add(new BasicNameValuePair("branch", branch));
-				params.add(new BasicNameValuePair("multiple_branches", "true"));
-			}
-			else if(Curator.getBranchesNames().size() == 1) {
-				for(String branch : Curator.getBranchesNames())
-					params.add(new BasicNameValuePair("branch", branch));
-				params.add(new BasicNameValuePair("multiple_branches", "false"));
-			}
-			else {
-				params.add(new BasicNameValuePair("branch", ""));
-				params.add(new BasicNameValuePair("multiple_branches", "false"));
-			}
-			
-			params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromMainBranch()));
-			
 			params.add(new BasicNameValuePair("branchName", ""));
 			params.add(new BasicNameValuePair("branchContent", ""));
 		}
@@ -150,27 +170,18 @@ public class FrontEndBridge {
 		//HttpEntity entity = response2.getEntity();
 	}
 	
-	private void sendOtherBranchContent(String body) throws ClientProtocolException, IOException {
-		String email = objectMapper.readTree(body)
-				.get("data")
-				.get("email")
-				.asText();
-	
-		String id = objectMapper.readTree(body)
-				.get("client_id")
-				.asText();
-		String branchName = objectMapper.readTree(body)
-				.get("data")
-				.get("branchSelection")
-				.asText();
-		//System.out.println(branchName);
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("id", id));
-		
-		
+	/**
+	 * Completes a List<NameValuePair> object params with everything that is commom with all curator actions/pages
+	 * so the code doesn't need to be repeated accross multiple methods
+	 * <p>
+	 * Uses the Curator class
+	 * @param params that are to be completed
+	 * @return the now more complete params object
+	 * @since 0.1
+	 */
+	private List<NameValuePair> addCuratorParameters(List<NameValuePair> params){
 		params.add(new BasicNameValuePair("nextPage", "curator"));
-		params.add(new BasicNameValuePair("email", email));
-		params.add(new BasicNameValuePair("message", ""));
+		
 		params.add(new BasicNameValuePair("currversion", Curator.getLatestTag()));
 		
 		if(Curator.getBranchesNames().size() > 1) {
@@ -190,6 +201,40 @@ public class FrontEndBridge {
 		
 		params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromMainBranch()));
 		
+		return params;
+	}
+	
+	
+	/**
+	 * Used to reply when a curator asks to see the content of a specific branch
+	 * <p>
+	 * Uses the Curator class
+	 * @param body of the received message
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @since 0.1
+	 */
+	private void sendOtherBranchContent(String body) throws ClientProtocolException, IOException {
+		String email = objectMapper.readTree(body)
+				.get("data")
+				.get("email")
+				.asText();
+	
+		String id = objectMapper.readTree(body)
+				.get("client_id")
+				.asText();
+		
+		String branchName = objectMapper.readTree(body)
+				.get("data")
+				.get("branchSelection")
+				.asText();
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("id", id));
+		
+		addCuratorParameters(params);
+		params.add(new BasicNameValuePair("email", email));
+		
+		params.add(new BasicNameValuePair("message", ""));
 		params.add(new BasicNameValuePair("branchName", branchName));
 		params.add(new BasicNameValuePair("branchContent", Curator.getFileContentFromBranch(branchName)));
 		
@@ -201,29 +246,34 @@ public class FrontEndBridge {
 		//HttpEntity entity = response2.getEntity();
 	}
 	
+	/**
+	 * Used when a curator accepts a contribution
+	 * <p>
+	 * Uses the Curator class
+	 * @param body of the received message
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @since 0.1
+	 */
 	private void acceptContribution(String body) throws ClientProtocolException, IOException {
 		String email = objectMapper.readTree(body)
 				.get("data")
 				.get("email")
 				.asText();
-		System.out.println("hello1");
 		
 		String id = objectMapper.readTree(body)
 				.get("client_id")
 				.asText();
-		System.out.println("hello2");
 		
 		String branchName = objectMapper.readTree(body)
 				.get("data")
 				.get("selectedBranch")
 				.asText();
-		System.out.println("hello3");
 		
 		String message = objectMapper.readTree(body)
 				.get("data")
 				.get("message")
 				.asText();
-		System.out.println("hello3");
 		
 		String version = objectMapper.readTree(body)
 				.get("data")
@@ -236,28 +286,10 @@ public class FrontEndBridge {
 			Curator.acceptChange(email, branchName, message,version);
 		
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("currversion", Curator.getLatestTag()));
 		params.add(new BasicNameValuePair("id", id));
 		
-		params.add(new BasicNameValuePair("nextPage", "curator"));
+		addCuratorParameters(params);
 		params.add(new BasicNameValuePair("email", email));
-		
-		if(Curator.getBranchesNames().size() > 1) {
-			for(String branch : Curator.getBranchesNames())
-				params.add(new BasicNameValuePair("branch", branch));
-			params.add(new BasicNameValuePair("multiple_branches", "true"));
-		}
-		else if(Curator.getBranchesNames().size() == 1) {
-			for(String branch : Curator.getBranchesNames())
-				params.add(new BasicNameValuePair("branch", branch));
-			params.add(new BasicNameValuePair("multiple_branches", "false"));
-		}
-		else {
-			params.add(new BasicNameValuePair("branch", ""));
-			params.add(new BasicNameValuePair("multiple_branches", "false"));
-		}
-		
-		params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromMainBranch()));
 		
 		params.add(new BasicNameValuePair("branchName", ""));
 		params.add(new BasicNameValuePair("branchContent", ""));
@@ -271,6 +303,17 @@ public class FrontEndBridge {
 		//HttpEntity entity = response2.getEntity();
 	}
 	
+	
+	
+	/**
+	 * Used when a curator changes a contribution and merges it to the main
+	 * <p>
+	 * Uses the Curator class
+	 * @param body of the received message
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @since 0.1
+	 */
 	private void mixContribution(String body) throws ClientProtocolException, IOException {
 		String email = objectMapper.readTree(body)
 				.get("data")
@@ -314,25 +357,8 @@ public class FrontEndBridge {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("id", id));
 		
-		params.add(new BasicNameValuePair("nextPage", "curator"));
+		addCuratorParameters(params);
 		params.add(new BasicNameValuePair("email", email));
-		
-		if(Curator.getBranchesNames().size() > 1) {
-			for(String branch : Curator.getBranchesNames())
-				params.add(new BasicNameValuePair("branch", branch));
-			params.add(new BasicNameValuePair("multiple_branches", "true"));
-		}
-		else if(Curator.getBranchesNames().size() == 1) {
-			for(String branch : Curator.getBranchesNames())
-				params.add(new BasicNameValuePair("branch", branch));
-			params.add(new BasicNameValuePair("multiple_branches", "false"));
-		}
-		else {
-			params.add(new BasicNameValuePair("branch", ""));
-			params.add(new BasicNameValuePair("multiple_branches", "false"));
-		}
-		
-		params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromMainBranch()));
 		
 		params.add(new BasicNameValuePair("branchName", ""));
 		params.add(new BasicNameValuePair("branchContent", ""));
@@ -346,6 +372,15 @@ public class FrontEndBridge {
 		//HttpEntity entity = response2.getEntity();
 	}
 	
+	/**
+	 * Used when a curator rejects a contribution
+	 * <p>
+	 * Uses the Curator class
+	 * @param body of the received message
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @since 0.1
+	 */
 	private void rejectContribution(String body) throws ClientProtocolException, IOException {
 		String email = objectMapper.readTree(body)
 				.get("data")
@@ -371,25 +406,8 @@ public class FrontEndBridge {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("id", id));
 		
-		params.add(new BasicNameValuePair("nextPage", "curator"));
+		addCuratorParameters(params);
 		params.add(new BasicNameValuePair("email", email));
-		
-		if(Curator.getBranchesNames().size() > 1) {
-			for(String branch : Curator.getBranchesNames())
-				params.add(new BasicNameValuePair("branch", branch));
-			params.add(new BasicNameValuePair("multiple_branches", "true"));
-		}
-		else if(Curator.getBranchesNames().size() == 1) {
-			for(String branch : Curator.getBranchesNames())
-				params.add(new BasicNameValuePair("branch", branch));
-			params.add(new BasicNameValuePair("multiple_branches", "false"));
-		}
-		else {
-			params.add(new BasicNameValuePair("branch", ""));
-			params.add(new BasicNameValuePair("multiple_branches", "false"));
-		}
-		
-		params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromMainBranch()));
 		
 		params.add(new BasicNameValuePair("branchName", ""));
 		params.add(new BasicNameValuePair("branchContent", ""));
