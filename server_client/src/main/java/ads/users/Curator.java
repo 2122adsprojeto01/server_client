@@ -14,7 +14,7 @@ import ads.bridges.GitHubRestAPI;
 /**
  * This is to be called by the curator's "requests"
  * @author Susana Polido
- * @version 0.1
+ * @version 0.2
  */
 public class Curator {
 	
@@ -153,6 +153,23 @@ public class Curator {
 	 */
 	public static String getLatestTag() {
 		return GitHubRestAPI.getLatestTag();
+	}
+	
+	
+	
+	
+	public static String getFileContentFromMainBranch() {
+		return getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), GitHubRestAPI.getMainBranchName());
+	}
+	
+	
+	public static boolean isCurator(String email) {
+		return GitHubRestAPI.isCurator(email);
+	}
+	
+	
+	public static String getFileContentFromBranch(String branch) {
+		return getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), branch);
 	}
 	
 	//Maybe should be moved to a proper test area

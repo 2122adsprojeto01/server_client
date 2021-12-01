@@ -22,6 +22,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ads.configurations.SiteConfigurations;
 import ads.users.Curator;
 
 public class FrontEndBridge {
@@ -111,11 +112,11 @@ public class FrontEndBridge {
 	
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("id", id));
-		if(GitHubRestAPI.isCurator(email)) {
+		if(Curator.isCurator(email)) {
 			params.add(new BasicNameValuePair("nextPage", "curator"));
 			params.add(new BasicNameValuePair("email", email));
 			params.add(new BasicNameValuePair("message", ""));
-			params.add(new BasicNameValuePair("currversion", GitHubRestAPI.getLatestTag()));
+			params.add(new BasicNameValuePair("currversion", Curator.getLatestTag()));
 			
 			if(Curator.getBranchesNames().size() > 1) {
 				for(String branch : Curator.getBranchesNames())
@@ -132,10 +133,7 @@ public class FrontEndBridge {
 				params.add(new BasicNameValuePair("multiple_branches", "false"));
 			}
 			
-			params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), GitHubRestAPI.getMainBranchName())));
-			
-			//System.out.println(Curator.getBranchesNames());
-			System.out.println(Curator.getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), GitHubRestAPI.getMainBranchName()));
+			params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromMainBranch()));
 			
 			params.add(new BasicNameValuePair("branchName", ""));
 			params.add(new BasicNameValuePair("branchContent", ""));
@@ -173,7 +171,7 @@ public class FrontEndBridge {
 		params.add(new BasicNameValuePair("nextPage", "curator"));
 		params.add(new BasicNameValuePair("email", email));
 		params.add(new BasicNameValuePair("message", ""));
-		params.add(new BasicNameValuePair("currversion", GitHubRestAPI.getLatestTag()));
+		params.add(new BasicNameValuePair("currversion", Curator.getLatestTag()));
 		
 		if(Curator.getBranchesNames().size() > 1) {
 			for(String branch : Curator.getBranchesNames())
@@ -190,10 +188,10 @@ public class FrontEndBridge {
 			params.add(new BasicNameValuePair("multiple_branches", "false"));
 		}
 		
-		params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), GitHubRestAPI.getMainBranchName())));
+		params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromMainBranch()));
 		
 		params.add(new BasicNameValuePair("branchName", branchName));
-		params.add(new BasicNameValuePair("branchContent", Curator.getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), branchName)));
+		params.add(new BasicNameValuePair("branchContent", Curator.getFileContentFromBranch(branchName)));
 		
 		
 		HttpPost httppost = new HttpPost(uri+"/server_client_post");
@@ -232,13 +230,13 @@ public class FrontEndBridge {
 				.get("nextversion")
 				.asText();
 		
-		if(version.equals(GitHubRestAPI.getLatestTag()))
+		if(version.equals(Curator.getLatestTag()))
 			Curator.acceptChange(email, branchName, message);
 		else
 			Curator.acceptChange(email, branchName, message,version);
 		
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("currversion", GitHubRestAPI.getLatestTag()));
+		params.add(new BasicNameValuePair("currversion", Curator.getLatestTag()));
 		params.add(new BasicNameValuePair("id", id));
 		
 		params.add(new BasicNameValuePair("nextPage", "curator"));
@@ -259,7 +257,7 @@ public class FrontEndBridge {
 			params.add(new BasicNameValuePair("multiple_branches", "false"));
 		}
 		
-		params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), GitHubRestAPI.getMainBranchName())));
+		params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromMainBranch()));
 		
 		params.add(new BasicNameValuePair("branchName", ""));
 		params.add(new BasicNameValuePair("branchContent", ""));
@@ -307,7 +305,7 @@ public class FrontEndBridge {
 				.get("nextversion")
 				.asText();
 		
-		if(version.equals(GitHubRestAPI.getLatestTag()))
+		if(version.equals(Curator.getLatestTag()))
 			Curator.mixChange(email, branchName, message, mixed);
 		else
 			Curator.mixChange(email, branchName, message, mixed, version);
@@ -334,7 +332,7 @@ public class FrontEndBridge {
 			params.add(new BasicNameValuePair("multiple_branches", "false"));
 		}
 		
-		params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), GitHubRestAPI.getMainBranchName())));
+		params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromMainBranch()));
 		
 		params.add(new BasicNameValuePair("branchName", ""));
 		params.add(new BasicNameValuePair("branchContent", ""));
@@ -391,7 +389,7 @@ public class FrontEndBridge {
 			params.add(new BasicNameValuePair("multiple_branches", "false"));
 		}
 		
-		params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), GitHubRestAPI.getMainBranchName())));
+		params.add(new BasicNameValuePair("mainBranch", Curator.getFileContentFromMainBranch()));
 		
 		params.add(new BasicNameValuePair("branchName", ""));
 		params.add(new BasicNameValuePair("branchContent", ""));
@@ -409,7 +407,7 @@ public class FrontEndBridge {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		while(true) {
 			try {
-				new FrontEndBridge("http://localhost:1337").connectJavaClient();
+				new FrontEndBridge(new SiteConfigurations("site_config.ini").getUri()).connectJavaClient();
 				//new FrontEndBridge("https://ads2122projeto01.herokuapp.com").connectJavaClient();
 			}
 			catch(Exception e) {

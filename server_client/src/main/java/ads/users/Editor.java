@@ -33,7 +33,7 @@ public class Editor {
 	
 	
 	public static void main(String[] args) {
-		System.out.println(Editor.makeContribuition(GitHubRestAPI.getOwlFileName(), "hello mars", "making a new branch from the editor", "sicpo1@iscte-iul.pt"));
+		System.out.println(Editor.makeContribuition(GitHubRestAPI.getOwlFileName(), "hello mars, hgghghghghg", "making a new branch from the editor", "sicpo1@iscte-iul.pt"));
 	}
 	
 }
