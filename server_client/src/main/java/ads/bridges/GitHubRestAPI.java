@@ -26,19 +26,24 @@ import ads.configurations.GitHubConfigurations;
  * <p>
  * Feito com base em https://docs.github.com/en/rest/reference/repos
  * @author Susana Polido
- * @version 1
+ * @version 1.1
  */
-public class GitHubRestAPI {
-	private static GitHubConfigurations GITHUBCONFIG = new GitHubConfigurations("remote_repo_config.ini");
-	private static ObjectMapper objectMapper = new ObjectMapper();
+public class GitHubRestAPI implements RepositoryAPI{
+	private GitHubConfigurations githubConfig;
+	private ObjectMapper objectMapper;;
+	
+	public GitHubRestAPI(String config) {
+		githubConfig = new GitHubConfigurations(config);
+		objectMapper = new ObjectMapper();
+	}
 	
 	/**
 	 * Returns the name of the main branch stored in the configurations file
 	 * @return name of the main branch
 	 * @since 1
 	 */
-	public static String getMainBranchName() {
-		return GITHUBCONFIG.getMainName();
+	public String getMainBranchName() {
+		return githubConfig.getMainName();
 	}
 	
 	/**
@@ -46,8 +51,8 @@ public class GitHubRestAPI {
 	 * @return the name of the file
 	 * @since 1
 	 */
-	public static String getOwlFileName() {
-		return GITHUBCONFIG.getOntologyFileName();
+	public String getOwlFileName() {
+		return githubConfig.getOntologyFileName();
 	}
 	
 	/**
@@ -56,8 +61,8 @@ public class GitHubRestAPI {
 	 * @return if the email matches that of a curator
 	 * @since 1
 	 */
-	public static boolean isCurator(String email) {
-		return GITHUBCONFIG.isCurator(email);
+	public boolean isCurator(String email) {
+		return githubConfig.isCurator(email);
 	}
 		
 	/**
@@ -66,9 +71,9 @@ public class GitHubRestAPI {
 	 * @return HttpResponse<String> github's reply
 	 * @since 1
 	 */
-	public static HttpResponse<String> get(String path){
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(GITHUBCONFIG.getGitHubBaseUrl() + path))
-                .setHeader("Authorization", GITHUBCONFIG.getGitHubToken())
+	private HttpResponse<String> get(String path){
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(githubConfig.getGitHubBaseUrl() + path))
+                .setHeader("Authorization", githubConfig.getGitHubToken())
                 .GET()
                 .build();
 
@@ -87,9 +92,9 @@ public class GitHubRestAPI {
 	 * @return HttpResponse<String> github's reply
 	 * @since 1
 	 */	
-	public static HttpResponse<String> delete(String path) {
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(GITHUBCONFIG.getGitHubBaseUrl() + path))
-                .setHeader("Authorization", GITHUBCONFIG.getGitHubToken())
+	private HttpResponse<String> delete(String path) {
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(githubConfig.getGitHubBaseUrl() + path))
+                .setHeader("Authorization", githubConfig.getGitHubToken())
                 .DELETE()
                 .build();
 
@@ -109,9 +114,9 @@ public class GitHubRestAPI {
 	 * @return HttpResponse<String> github's reply
 	 * @since 1
 	 */	
-	public static HttpResponse<String> post(String path, String body) {
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(GITHUBCONFIG.getGitHubBaseUrl() + path))
-                .setHeader("Authorization", GITHUBCONFIG.getGitHubToken())
+	private HttpResponse<String> post(String path, String body) {
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(githubConfig.getGitHubBaseUrl() + path))
+                .setHeader("Authorization", githubConfig.getGitHubToken())
                 .POST(BodyPublishers.ofString(body))
                 .build();
 		try {
@@ -130,9 +135,9 @@ public class GitHubRestAPI {
 	 * @return HttpResponse<String> github's reply
 	 * @since 1
 	 */
-	public static HttpResponse<String> put(String path, String body) {
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(GITHUBCONFIG.getGitHubBaseUrl() + path))
-                .setHeader("Authorization", GITHUBCONFIG.getGitHubToken())
+	public HttpResponse<String> put(String path, String body) {
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(githubConfig.getGitHubBaseUrl() + path))
+                .setHeader("Authorization", githubConfig.getGitHubToken())
                 .PUT(BodyPublishers.ofString(body))
                 .build();
 
@@ -152,7 +157,7 @@ public class GitHubRestAPI {
 	 * @return branch's sha
 	 * @since 1
 	 */
-	public static String getBranchSHA(String branch) {
+	private String getBranchSHA(String branch) {
 		HttpResponse<String> response = get("/branches/"+branch);
 		try {
 			String body = response.body();
@@ -173,7 +178,7 @@ public class GitHubRestAPI {
 	 * @return a list with all the branches' names in the github repository
 	 * @since 1
 	 */
-	public static List<String> getBranchesNames() {
+	public List<String> getBranchesNames() {
     	HttpResponse<String> response = get("/branches");
 		try {
 			String body = response.body();
@@ -209,7 +214,7 @@ public class GitHubRestAPI {
 	 * @return inputstream of the file
 	 * @since 1
 	 */
-	public static InputStream getInputStreamFileFromBranch(String file, String branch) {
+	public InputStream getInputStreamFileFromBranch(String file, String branch) {
 		HttpResponse<String> response = get("/contents/"+file+"?ref="+branch);
 		try {
 			String body = response.body();
@@ -230,7 +235,7 @@ public class GitHubRestAPI {
 	 * @return github's http response
 	 * @since 1
 	 */
-	public static HttpResponse<String> deleteBranch(String branch){
+	public HttpResponse<String> deleteBranch(String branch){
 		return delete("/git/refs/heads/"+branch);
 	}
 	
@@ -241,7 +246,7 @@ public class GitHubRestAPI {
 	 * @return github's http response
 	 * @since 1
 	 */
-	public static HttpResponse<String> mergeBranches(String baseBranch, String toMergeBranch) {
+	public HttpResponse<String> mergeBranches(String baseBranch, String toMergeBranch) {
     	Map<String, String> createBranchMap = Map.of(
                 "base", baseBranch,
                 "head", toMergeBranch);
@@ -262,7 +267,7 @@ public class GitHubRestAPI {
 	 * @return github's http response
 	 * @since 1
 	 */
-	public static HttpResponse<String> releaseVersion(String branch, String tag_name, String message) {
+	public HttpResponse<String> releaseVersion(String branch, String tag_name, String message) {
     	Map<String, String> createRelease = Map.of(
                 "tag_name", tag_name,
                 "target_commitish", getBranchSHA(branch),
@@ -283,7 +288,7 @@ public class GitHubRestAPI {
 	 * @return the name of the newly created branch
 	 * @since 1
 	 */
-	public static String createBranch(String branch, String email) {
+	public String createBranch(String branch, String email) {
 		String time = LocalDateTime.now().toString().replace(":","_");
 		String new_branch_name = time +"@" + email;
         Map<String, String> createBranchMap = Map.of(
@@ -312,7 +317,7 @@ public class GitHubRestAPI {
 	 * @return file's sha
 	 * @since 1
 	 */
-	public static String getFileSHAFromBranch(String file, String branch) {
+	public String getFileSHAFromBranch(String file, String branch) {
     	HttpResponse<String> response = get("/contents/"+file+"?ref="+branch);
 		try {
 			String body = response.body();
@@ -339,7 +344,7 @@ public class GitHubRestAPI {
 	 * @return github's http response
 	 * @since 1
 	 */
-	public static HttpResponse<String> updateFile(String file, String message, String content, String branch) {
+	public HttpResponse<String> updateFile(String file, String message, String content, String branch) {
 		String sha = getFileSHAFromBranch(file, branch);
 		if(sha.contains("Status code: "))
 			return null;
@@ -366,7 +371,7 @@ public class GitHubRestAPI {
 	 * @return the latest tag
 	 * @since 1
 	 */
-	public static String getLatestTag() {
+	public String getLatestTag() {
 		try {
 			String tag = objectMapper.readTree(getTags().body())
 			        .get(0)
@@ -384,33 +389,34 @@ public class GitHubRestAPI {
 	 * @return list of tags
 	 * @since 1
 	 */
-	public static HttpResponse<String> getTags(){
+	public HttpResponse<String> getTags(){
     	return get("/tags");
     }
 
 
 	//Should be moved to a proper test section???
 	public static void main(String[] args) {
-		System.out.println(GitHubRestAPI.getMainBranchName().equals("main"));
-		System.out.println(GitHubRestAPI.getOwlFileName().equals("ontology.owl"));
-		System.out.println(GitHubRestAPI.isCurator("boop"));
-		System.out.println(GitHubRestAPI.isCurator("adsprojet01@gmail.com"));
+		GitHubRestAPI githubrest = new GitHubRestAPI("remote_repo_config.ini");
+		System.out.println(githubrest.getMainBranchName().equals("main"));
+		System.out.println(githubrest.getOwlFileName().equals("ontology.owl"));
+		System.out.println(githubrest.isCurator("boop"));
+		System.out.println(githubrest.isCurator("adsprojet01@gmail.com"));
 		
-		String new_branch = GitHubRestAPI.createBranch(GitHubRestAPI.getMainBranchName(), "test");
+		String new_branch = githubrest.createBranch(githubrest.getMainBranchName(), "test");
 		
 		String content = "hello";
-		System.out.println(GitHubRestAPI.updateFile(GitHubRestAPI.getOwlFileName(), "testing", content, new_branch));
+		System.out.println(githubrest.updateFile(githubrest.getOwlFileName(), "testing", content, new_branch));
 		
-		GitHubRestAPI.mergeBranches(GitHubRestAPI.getMainBranchName(), new_branch);
-		GitHubRestAPI.deleteBranch(new_branch);
+		githubrest.mergeBranches(githubrest.getMainBranchName(), new_branch);
+		githubrest.deleteBranch(new_branch);
 		
-		List<String> branches = GitHubRestAPI.getBranchesNames();
+		List<String> branches = githubrest.getBranchesNames();
 		for(String branch : branches)
 			System.out.println(branch);
 		
-		System.out.println(GitHubRestAPI.releaseVersion(GitHubRestAPI.getMainBranchName(), "0", "testing"));
-		System.out.println(GitHubRestAPI.getLatestTag());
+		System.out.println(githubrest.releaseVersion(githubrest.getMainBranchName(), "0", "testing"));
+		System.out.println(githubrest.getLatestTag());
 		
-		GitHubRestAPI.getInputStreamFileFromBranch("ontology.owl", GitHubRestAPI.getMainBranchName());
+		githubrest.getInputStreamFileFromBranch("ontology.owl", githubrest.getMainBranchName());
 	}
 }
