@@ -10,13 +10,15 @@ import org.apache.commons.io.IOUtils;
 
 import ads.bridges.EmailHandler;
 import ads.bridges.GitHubRestAPI;
+import ads.bridges.RepositoryAPI;
 
 /**
  * This is to be called by the curator's "requests"
  * @author Susana Polido
- * @version 0.2
+ * @version 0.3
  */
 public class Curator {
+	private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.ini");
 	
 	/**
 	 * Merges the branch into the main branch, deletes the branch, releases a version of the merged main branch with the passed version tag
@@ -33,7 +35,7 @@ public class Curator {
 		if(result.equals("not a curator") || result.equals("couldn't merge"))
 			return result;
 		
-		GitHubRestAPI.releaseVersion(GitHubRestAPI.getMainBranchName(),version, "New version released");
+		repository.releaseVersion(repository.getMainBranchName(),version, "New version released");
 		return result;
 	}
 	
@@ -53,7 +55,7 @@ public class Curator {
 		if(result.equals("not a curator") || result.equals("couldn't do the changes"))
 			return result;
 		
-		GitHubRestAPI.releaseVersion(GitHubRestAPI.getMainBranchName(),version, "New version released");
+		repository.releaseVersion(repository.getMainBranchName(),version, "New version released");
 		return result;
 	}
 	
@@ -66,9 +68,9 @@ public class Curator {
 	 * @since 0.1
 	 */
 	public static String rejectChange(String curator, String branch, String message) {
-		if(!GitHubRestAPI.isCurator(curator))
+		if(!repository.isCurator(curator))
 			return "not a curator";
-		GitHubRestAPI.deleteBranch(branch);
+		repository.deleteBranch(branch);
 		String editor = branch.substring(branch.indexOf("@")+1);
 		return EmailHandler.sendEmail(curator, editor, "Contribution Rejected", message);
 	}
@@ -83,12 +85,12 @@ public class Curator {
 	 * @since 0.1
 	 */
 	public static String acceptChange(String curator, String branch, String message) {
-		if(!GitHubRestAPI.isCurator(curator))
+		if(!repository.isCurator(curator))
 			return "not a curator";
-		HttpResponse<String> reply = GitHubRestAPI.mergeBranches(GitHubRestAPI.getMainBranchName(),branch);
+		HttpResponse<String> reply = repository.mergeBranches(repository.getMainBranchName(),branch);
 		if(reply == null)
 			return "couldn't merge";
-		GitHubRestAPI.deleteBranch(branch);
+		repository.deleteBranch(branch);
 		String editor = branch.substring(branch.indexOf("@")+1);
 		return EmailHandler.sendEmail(curator, editor, "Contribution Accepted", message);
 	}
@@ -103,16 +105,16 @@ public class Curator {
 	 * @since 0.1
 	 */
 	public static String mixChange(String curator, String branch, String message, String changes) {
-		if(!GitHubRestAPI.isCurator(curator))
+		if(!repository.isCurator(curator))
 			return "not a curator";
-		HttpResponse<String> reply = GitHubRestAPI.updateFile(GitHubRestAPI.getOwlFileName(), message,changes, branch);
+		HttpResponse<String> reply = repository.updateFile(repository.getOwlFileName(), message,changes, branch);
 		if(reply == null)
 			return "couldn't do the changes";
 		
-		reply = GitHubRestAPI.mergeBranches(GitHubRestAPI.getMainBranchName(),branch);
+		reply = repository.mergeBranches(repository.getMainBranchName(),branch);
 		if(reply == null)
 			return "couldn't merge";
-		GitHubRestAPI.deleteBranch(branch);
+		repository.deleteBranch(branch);
 		String editor = branch.substring(branch.indexOf("@")+1);
 		return EmailHandler.sendEmail(curator, editor, "Contribution Accepted with changes", message);
 	}
@@ -123,8 +125,8 @@ public class Curator {
 	 * @since 0.1
 	 */
 	public static List<String> getBranchesNames(){
-		List<String> branches = GitHubRestAPI.getBranchesNames();
-		branches.remove(GitHubRestAPI.getMainBranchName());
+		List<String> branches = repository.getBranchesNames();
+		branches.remove(repository.getMainBranchName());
 		return branches;
 	}
 	
@@ -137,7 +139,7 @@ public class Curator {
 	 */
 	public static String getFileContentFromBranch(String file, String branch) {
 		try {
-			InputStream inputStream = GitHubRestAPI.getInputStreamFileFromBranch(file, branch);
+			InputStream inputStream = repository.getInputStreamFileFromBranch(file, branch);
 			String result = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 			return result;
 		} catch (IOException e) {
@@ -152,7 +154,7 @@ public class Curator {
 	 * @since 0.1
 	 */
 	public static String getLatestTag() {
-		return GitHubRestAPI.getLatestTag();
+		return repository.getLatestTag();
 	}
 	
 	
@@ -165,7 +167,7 @@ public class Curator {
 	 * @since 0.2
 	 */
 	public static String getFileContentFromMainBranch() {
-		return getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), GitHubRestAPI.getMainBranchName());
+		return getFileContentFromBranch(repository.getOwlFileName(), repository.getMainBranchName());
 	}
 	
 	
@@ -178,7 +180,7 @@ public class Curator {
 	 * @since 0.2
 	 */
 	public static boolean isCurator(String email) {
-		return GitHubRestAPI.isCurator(email);
+		return repository.isCurator(email);
 	}
 	
 	/**
@@ -189,12 +191,12 @@ public class Curator {
 	 * @since 0.2
 	 */
 	public static String getFileContentFromBranch(String branch) {
-		return getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), branch);
+		return getFileContentFromBranch(repository.getOwlFileName(), branch);
 	}
 	
 	//Maybe should be moved to a proper test area
 	public static void main(String[] args) {
-		System.out.println(Curator.getFileContentFromBranch(GitHubRestAPI.getOwlFileName(), GitHubRestAPI.getMainBranchName()));
+		System.out.println(Curator.getFileContentFromBranch(repository.getOwlFileName(), repository.getMainBranchName()));
 		//System.out.println(Curator.getLatestTag());
 		//List<String> branches = Curator.getBranchesNames();
 		//for(String branch : branches)
