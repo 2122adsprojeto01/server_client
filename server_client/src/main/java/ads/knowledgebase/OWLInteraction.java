@@ -4,17 +4,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLAxiomVisitor;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -31,12 +31,11 @@ import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.util.OWLEntityRemover;
 import org.semanticweb.owlapi.util.OWLEntityRenamer;
 
-import com.clarkparsia.owlapi.explanation.util.OntologyUtils;
 
 /**
  * Class that uses the owl api
  * @author Susana Polido
- * @version 0.1
+ * @version 0.2
  */
 public class OWLInteraction {
 	OWLOntologyManager manager;
@@ -356,6 +355,13 @@ public class OWLInteraction {
 	
 	
 	// FUNCTIONS THAT DELETE THINGS
+	
+	/**
+	 * Removes a named individual from the ontology
+	 * @param namedIndividual to be removed
+	 * @return String that contains all the ontology
+	 * @version 0.1
+	 */
 	public String removeNamedIndividual(String namedIndividual) {
 		OWLEntityRemover remover = new OWLEntityRemover(Collections.singleton(ontology));
 		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
@@ -372,6 +378,12 @@ public class OWLInteraction {
 		}
 	}
 	
+	/**
+	 * Removes a class from the ontology
+	 * @param className to be removed
+	 * @return String that contains all the ontology
+	 * @version 0.1
+	 */
 	public String removeClass(String className) {
 		OWLEntityRemover remover = new OWLEntityRemover(Collections.singleton(ontology));
 		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
@@ -388,6 +400,12 @@ public class OWLInteraction {
 		}
 	}
 	
+	/**
+	 * Removes a data property from the ontology
+	 * @param dataProperty to be removed
+	 * @return String that contains all the ontology
+	 * @version 0.1
+	 */
 	public String removeDataProperty(String dataProperty) {
 		OWLEntityRemover remover = new OWLEntityRemover(Collections.singleton(ontology));
 		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
@@ -492,11 +510,59 @@ public class OWLInteraction {
 	
 	
 	
+	//Gets things for the ontology
+	
+	/**
+	 * Gets the name of all the classes of the ontology as strings
+	 * @return list of all classes' names as Strings
+	 * @version 0.2
+	 */
+	public List<String> getClasses(){
+		List<OWLClass> classes = new ArrayList<>();
+		ontology.classesInSignature().forEach(classes::add);
+		
+		List<String> classesNames = new ArrayList<>();
+		for(OWLClass c : classes)
+			classesNames.add(c.getIRI().getFragment());
+		return classesNames;
+	}
+	
+	/**
+	 * Gets the name of all the named individuals of the ontology as strings
+	 * @return list of all named individuals' names as Strings
+	 * @version 0.2
+	 */
+	public List<String> getNamedIndividuals(){
+		List<OWLNamedIndividual> individuals = new ArrayList<>();
+		ontology.individualsInSignature().forEach(individuals::add);
+		
+		List<String> individualsNames = new ArrayList<>();
+		for(OWLNamedIndividual i : individuals)
+			individualsNames.add(i.getIRI().getFragment());
+		return individualsNames;
+	}
+	
+	/**
+	 * Gets the name of all the data properties of the ontology as strings
+	 * @return list of all data properties' names as Strings
+	 * @version 0.2
+	 */
+	public List<String> getDataProperties(){
+		List<OWLDataProperty> properties = new ArrayList<>();
+		ontology.dataPropertiesInSignature().forEach(properties::add);
+		
+		List<String> propertiesNames = new ArrayList<>();
+		for(OWLDataProperty p : properties)
+			propertiesNames.add(p.getIRI().getFragment());
+		return propertiesNames;
+	}
+	
+	
 	//Tests
 	public static void main(String[] args) {
 		try {
 			OWLInteraction test = new OWLInteraction(new FileInputStream("test.owl"));
-			String result = test.createClass("Animal");
+			/*String result = test.createClass("Animal");
 			result = test.createClass("Superhero");
 			result = test.createClass("Human");
 			result = test.createClass("Person");
@@ -519,7 +585,10 @@ public class OWLInteraction {
 			result = test.removeNamedIndividual("zane");
 			result = test.removeIsSubclassOf("Human", "Person");
 			result = test.changeClassName("Animal","Hello");
-			System.out.println(result);
+			System.out.println(result);*/
+			
+			for(String c : test.getDataProperties())
+				System.out.println(c);
 		} catch (OWLOntologyCreationException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
