@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ads.configurations.SiteConfigurations;
 import ads.users.Curator;
 import frontendusers.FrontEndCurator;
+import frontendusers.FrontEndEditor;
 
 /**
  * A class that makes the bridge between the client requests and the appropriate frontenduser class function
@@ -36,6 +37,7 @@ public class FrontEndBridge {
 	private static ObjectMapper objectMapper = new ObjectMapper();
 	private String uri;
 	private FrontEndCurator curator;
+	private FrontEndEditor editor;
 	
 	/**
 	 * Creates the object from the location of the frontend site
@@ -45,6 +47,7 @@ public class FrontEndBridge {
 	public FrontEndBridge(String uri) {
 		this.uri = uri;
 		this.curator = new FrontEndCurator(uri);
+		this.editor = new FrontEndEditor(uri);
 	}
 	
 	
@@ -86,7 +89,6 @@ public class FrontEndBridge {
 							.get("data")
 							.get("action")
 							.asText();
-				System.out.println(action);
 				if(action.equals("acceptContribution"))
 					curator.acceptContribution(body);
 				else if(action.equals("mixContribution"))
@@ -96,7 +98,27 @@ public class FrontEndBridge {
 				else
 					unknownRequest(body);
 				break;
-				
+			case "editor":
+				editor.goToEditorPage(body);
+				break;
+			case "createClass":
+				editor.createClass(body);
+				break;
+			case "createIndividual":
+				editor.createIndividual(body);
+				break;
+			case "createDataProperty":
+				editor.createDataProperty(body);
+				break;
+			case "deleteStuff":
+				System.out.println("got to the right case");
+				editor.deleteStuff(body);
+				break;
+			/*case "deleteIndividual":
+				editor.deleteIndividual(body);
+				break;*/
+			case "viewer":
+				break;
 			default:
 				unknownRequest(body);
 				break;
