@@ -30,7 +30,7 @@ import ads.configurations.GitHubConfigurations;
  */
 public class GitHubRestAPI implements RepositoryAPI{
 	private GitHubConfigurations githubConfig;
-	private ObjectMapper objectMapper;;
+	private ObjectMapper objectMapper;
 	
 	public GitHubRestAPI(String config) {
 		githubConfig = new GitHubConfigurations(config);
