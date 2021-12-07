@@ -30,7 +30,7 @@ import frontendusers.FrontEndEditor;
 /**
  * A class that makes the bridge between the client requests and the appropriate frontenduser class function
  * @author Susana Polido
- * @version 0.2
+ * @version 0.3
  */
 
 public class FrontEndBridge {
@@ -110,13 +110,27 @@ public class FrontEndBridge {
 			case "createDataProperty":
 				editor.createDataProperty(body);
 				break;
+			case "createObjectProperty":
+				editor.createObjectProperty(body);
+				break;
 			case "deleteStuff":
-				System.out.println("got to the right case");
 				editor.deleteStuff(body);
 				break;
-			/*case "deleteIndividual":
-				editor.deleteIndividual(body);
-				break;*/
+			case "editClass":
+				break;
+			case "editIndividual":
+				break;
+			case "editDataProperty":
+				editor.editDataPropertyPage(body);
+				break;
+			case "changeDataProperty":
+				editor.changeDataProperty(body);
+			case "editObjectProperty":
+				editor.editObjectPropertyPage(body);
+				break;
+			case "changeObjectProperty":
+				editor.changeObjectProperty(body);
+				break;
 			case "viewer":
 				break;
 			default:

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.EntityType;
@@ -28,6 +29,8 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.parameters.Imports;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.OWLEntityRemover;
 import org.semanticweb.owlapi.util.OWLEntityRenamer;
 
@@ -35,7 +38,11 @@ import org.semanticweb.owlapi.util.OWLEntityRenamer;
 /**
  * Class that uses the owl api
  * @author Susana Polido
- * @version 0.2
+ * @version 0.3
+ */
+/**
+ * @author susan
+ *
  */
 public class OWLInteraction {
 	OWLOntologyManager manager;
@@ -56,12 +63,6 @@ public class OWLInteraction {
 		factory = ontology.getOWLOntologyManager().getOWLDataFactory();
 		format = manager.getOntologyFormat(ontology);
 	}
-	
-	
-	
-	
-	
-	// MISSING THE DATATYPE!!!
 	
 	
 	
@@ -160,10 +161,32 @@ public class OWLInteraction {
 	}
 	
 	
+	/**
+	 * Adds a comment to a object property
+	 * @param annotation to be created
+	 * @entity that the annotation belongs to
+	 * @return String that contains all the ontology
+	 * @since 0.2
+	 */
+	public String addCommentAnnotationToObjectProperty(String annotation, String entity) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(annotation));
+		OWLEntity en = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, entity));
+		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(en.getIRI(), anno);
+		manager.addAxiom(ontology, axiom);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	
 	
-	// FUNCTIONS THAT CREATE THINGS (class, named individual, data property)
+	// FUNCTIONS THAT CREATE THINGS (class, named individual, data property, object property)
 	
 	/**
 	 * Creates a new entity
@@ -272,7 +295,6 @@ public class OWLInteraction {
 	
 	
 	
-	
 	// FUNCTIONS THAT CREATE RELATIONSHIPS BETWEEN THINGS
 	
 	/**
@@ -352,6 +374,158 @@ public class OWLInteraction {
 	
 	
 	
+	/**
+	 * Adds the object property is functional
+	 * @param objectProperty name of the object property
+	 * @return String that contains all the ontology
+	 * @since 0.2
+	 */
+	public String addObjectPropertyIsFunctional(String objectProperty) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+		OWLAxiom axiom = factory.getOWLFunctionalObjectPropertyAxiom(entity);
+		manager.addAxiom(ontology, axiom);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Adds the object property is asymmetric
+	 * @param objectProperty name of the object property
+	 * @return String that contains all the ontology
+	 * @since 0.2
+	 */
+	public String addObjectPropertyIsAsymmetric(String objectProperty) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+		OWLAxiom axiom = factory.getOWLAsymmetricObjectPropertyAxiom(entity);
+		manager.addAxiom(ontology, axiom);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Adds the object property is inverse functional
+	 * @param objectProperty name of the object property
+	 * @return String that contains all the ontology
+	 * @since 0.2
+	 */
+	public String addObjectPropertyIsInverseFunctional(String objectProperty) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+		OWLAxiom axiom = factory.getOWLInverseFunctionalObjectPropertyAxiom(entity);
+		manager.addAxiom(ontology, axiom);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Adds the object property is Irreflexive
+	 * @param objectProperty name of the object property
+	 * @return String that contains all the ontology
+	 * @since 0.2
+	 */
+	public String addObjectPropertyIsIrreflexive(String objectProperty) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+		OWLAxiom axiom = factory.getOWLIrreflexiveObjectPropertyAxiom(entity);
+		manager.addAxiom(ontology, axiom);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Adds the object property is reflexive
+	 * @param objectProperty name of the object property
+	 * @return String that contains all the ontology
+	 * @since 0.2
+	 */
+	public String addObjectPropertyIsReflexive(String objectProperty) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+		OWLAxiom axiom = factory.getOWLReflexiveObjectPropertyAxiom(entity);
+		manager.addAxiom(ontology, axiom);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Adds the object property is symmetric
+	 * @param objectProperty name of the object property
+	 * @return String that contains all the ontology
+	 * @since 0.2
+	 */
+	public String addObjectPropertyIsSymmetric(String objectProperty) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+		OWLAxiom axiom = factory.getOWLSymmetricObjectPropertyAxiom(entity);
+		manager.addAxiom(ontology, axiom);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Adds the object property is transitive
+	 * @param objectProperty name of the object property
+	 * @return String that contains all the ontology
+	 * @since 0.2
+	 */
+	public String addObjectPropertyIsTransitive(String objectProperty) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+		OWLAxiom axiom = factory.getOWLTransitiveObjectPropertyAxiom(entity);
+		manager.addAxiom(ontology, axiom);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	
 	// FUNCTIONS THAT DELETE THINGS
@@ -422,6 +596,29 @@ public class OWLInteraction {
 		}
 	}
 	
+	
+	/**
+	 * Removes an object property from the ontology
+	 * @param objectProperty to be removed
+	 * @return String that contains all the ontology
+	 * @version 0.1
+	 */
+	public String removeObjectProperty(String objectProperty) {
+		OWLEntityRemover remover = new OWLEntityRemover(Collections.singleton(ontology));
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+		entity.accept(remover);
+		manager.applyChanges(remover.getChanges());
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public String removeIsSubclassOf(String parent, String child) {
 		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
 		OWLClass parentClass = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, parent));
@@ -429,6 +626,232 @@ public class OWLInteraction {
 		OWLAxiom axiom = factory.getOWLSubClassOfAxiom(childClass, parentClass);
 		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
 		manager.applyChanges(remover);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Removes a comment annotation from a data property
+	 * @param dataProperty the comment belongs to
+	 * @param comment to be removed
+	 * @return String that contains all the ontology
+	 * @since 0.3
+	 */
+	public String removeCommentFromDataProperty(String dataProperty, String comment) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		
+		OWLDataProperty entity = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, dataProperty));
+		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(comment));
+		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(entity.getIRI(), anno);
+		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+		manager.applyChanges(remover);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Removes a comment annotation from an object property
+	 * @param objectProperty the comment belongs to
+	 * @param comment to be removed
+	 * @return String that contains all the ontology
+	 * @since 0.3
+	 */
+	public String removeCommentFromObjectProperty(String objectProperty, String comment) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(comment));
+		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(entity.getIRI(), anno);
+		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+		manager.applyChanges(remover);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * Removes from the ontology that an object property is transitive
+	 * @param objectProperty to be altered
+	 * @return String that contains all the ontology
+	 * @since 0.3
+	 */
+	public String removeObjectPropertyIsTransitive(String objectProperty) {
+		if(getObjectPropertyIsTransitive(objectProperty)) {
+			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+			OWLAxiom axiom = factory.getOWLTransitiveObjectPropertyAxiom(entity);
+			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+			manager.applyChanges(remover);
+		}
+		
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Removes from the ontology that an object property is asymmetric
+	 * @param objectProperty to be altered
+	 * @return String that contains all the ontology
+	 * @since 0.3
+	 */
+	public String removeObjectPropertyIsAsymmetric(String objectProperty) {
+		if(getObjectPropertyIsAsymmetric(objectProperty)) {
+			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+			OWLAxiom axiom = factory.getOWLAsymmetricObjectPropertyAxiom(entity);
+			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+			manager.applyChanges(remover);
+		}
+		
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Removes from the ontology that an object property is symmetric
+	 * @param objectProperty to be altered
+	 * @return String that contains all the ontology
+	 * @since 0.3
+	 */
+	public String removeObjectPropertyIsSymmetric(String objectProperty) {
+		if(getObjectPropertyIsSymmetric(objectProperty)) {
+			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+			OWLAxiom axiom = factory.getOWLSymmetricObjectPropertyAxiom(entity);
+			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+			manager.applyChanges(remover);
+		}
+	
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Removes from the ontology that an object property is reflexive
+	 * @param objectProperty to be altered
+	 * @return String that contains all the ontology
+	 * @since 0.3
+	 */
+	public String removeObjectPropertyIsReflexive(String objectProperty) {
+		if(getObjectPropertyIsReflexive(objectProperty)) {
+			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+			OWLAxiom axiom = factory.getOWLReflexiveObjectPropertyAxiom(entity);
+			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+			manager.applyChanges(remover);
+		}
+		
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Removes from the ontology that an object property is irreflexive
+	 * @param objectProperty to be altered
+	 * @return String that contains all the ontology
+	 * @since 0.3
+	 */
+	public String removeObjectPropertyIsIrreflexive(String objectProperty) {
+		if(getObjectPropertyIsIrreflexive(objectProperty)) {
+			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+			OWLAxiom axiom = factory.getOWLIrreflexiveObjectPropertyAxiom(entity);
+			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+			manager.applyChanges(remover);
+		}
+		
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Removes from the ontology that an object property is functional
+	 * @param objectProperty to be altered
+	 * @return String that contains all the ontology
+	 * @since 0.3
+	 */
+	public String removeObjectPropertyIsFunctional(String objectProperty) {
+		if(getObjectPropertyIsFunctional(objectProperty)) {
+			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+			OWLAxiom axiom = factory.getOWLFunctionalObjectPropertyAxiom(entity);
+			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+			manager.applyChanges(remover);
+		}
+		
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Removes from the ontology that an object property is inverse functional
+	 * @param objectProperty to be altered
+	 * @return String that contains all the ontology
+	 * @since 0.3
+	 */
+	public String removeObjectPropertyIsInverseFunctional(String objectProperty) {
+		if(getObjectPropertyIsInverseFunctional(objectProperty)) {	
+			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+			OWLAxiom axiom = factory.getOWLInverseFunctionalObjectPropertyAxiom(entity);
+			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+			manager.applyChanges(remover);
+		}
+		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 			manager.saveOntology(ontology, outputStream);
@@ -507,10 +930,32 @@ public class OWLInteraction {
 		}
 	}
 	
+	public String changeObjectPropertyName(String oldName, String newName) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLEntityRenamer renamer = new OWLEntityRenamer(manager,Collections.singleton(ontology));
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, oldName));
+		
+		Map<OWLEntity, IRI> map = new HashMap<>();
+		
+		for(OWLObjectProperty toRename : ontology.getObjectPropertiesInSignature())
+			if(toRename.equals(entity))
+	        	map.put(toRename, IRI.create(prefix, newName));
+	    
+		manager.applyChanges(renamer.changeIRI(map));
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	
 	
-	//Gets things for the ontology
+	
+	//Gets things from the ontology
 	
 	/**
 	 * Gets the name of all the classes of the ontology as strings
@@ -558,11 +1003,97 @@ public class OWLInteraction {
 	}
 	
 	
+	/**
+	 * Gets the name of all the object properties of the ontology as strings
+	 * @return list of all object properties' names as Strings
+	 * @version 0.2
+	 */
+	public List<String> getObjectProperties(){
+		List<OWLObjectProperty> properties = new ArrayList<>();
+		ontology.objectPropertiesInSignature().forEach(properties::add);
+		
+		List<String> propertiesNames = new ArrayList<>();
+		for(OWLObjectProperty p : properties)
+			propertiesNames.add(p.getIRI().getFragment());
+		return propertiesNames;
+	}
+	
+	
+	public List<String> getDataPropertyComments(String name){
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLDataProperty entity = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, name));
+		Stream<OWLAnnotation> anotations = EntitySearcher.getAnnotations(entity.getIRI(), ontology);
+		List<String> comments = new ArrayList<>();
+		for(OWLAnnotation s : anotations.toList())
+			comments.add(s.getValue().toString().substring(s.getValue().toString().indexOf("\"")+1, s.getValue().toString().indexOf("\"^^")));
+		return comments;
+	}
+	
+	public List<String> getObjectPropertyComments(String name){
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
+		Stream<OWLAnnotation> anotations = EntitySearcher.getAnnotations(entity.getIRI(), ontology);
+		List<String> comments = new ArrayList<>();
+		for(OWLAnnotation s : anotations.toList())
+			comments.add(s.getValue().toString().substring(s.getValue().toString().indexOf("\"")+1, s.getValue().toString().indexOf("\"^^")));
+		return comments;
+	}
+	
+	public boolean getObjectPropertyIsTransitive(String name) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
+		OWLAxiom axiom = factory.getOWLTransitiveObjectPropertyAxiom(entity);
+		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+	}
+	
+	public boolean getObjectPropertyIsAsymmetric(String name) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
+		OWLAxiom axiom = factory.getOWLAsymmetricObjectPropertyAxiom(entity);
+		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+	}
+	
+	public boolean getObjectPropertyIsSymmetric(String name) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
+		OWLAxiom axiom = factory.getOWLSymmetricObjectPropertyAxiom(entity);
+		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+	}
+	
+	public boolean getObjectPropertyIsReflexive(String name) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
+		OWLAxiom axiom = factory.getOWLReflexiveObjectPropertyAxiom(entity);
+		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+	}
+	
+	public boolean getObjectPropertyIsIrreflexive(String name) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
+		OWLAxiom axiom = factory.getOWLIrreflexiveObjectPropertyAxiom(entity);
+		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+	}
+	
+	public boolean getObjectPropertyIsFunctional(String name) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
+		OWLAxiom axiom = factory.getOWLFunctionalObjectPropertyAxiom(entity);
+		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+	}
+	
+	public boolean getObjectPropertyIsInverseFunctional(String name) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
+		OWLAxiom axiom = factory.getOWLInverseFunctionalObjectPropertyAxiom(entity);
+		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+	}
+	
 	//Tests
 	public static void main(String[] args) {
 		try {
 			OWLInteraction test = new OWLInteraction(new FileInputStream("test.owl"));
-			/*String result = test.createClass("Animal");
+			String result = "";
+			/*result = test.createClass("Animal");
 			result = test.createClass("Superhero");
 			result = test.createClass("Human");
 			result = test.createClass("Person");
@@ -573,9 +1104,31 @@ public class OWLInteraction {
 			result = test.addIsSubclassOf("Animal", "Human");
 			result = test.addIsSubclassOf("Human", "Person");
 			result = test.createObjectProperty("hasFather");
-			result = test.addObjectPropertyTo2NamedIndividuals("hasFather","zane","john");
-			result = test.createDataProperty("name");
-			result = test.addNamedIndividualBelongsToClass("Person","john");
+			result = test.addObjectPropertyIsTransitive("hasFather");
+			result = test.addObjectPropertyIsSymmetric("hasFather");
+			result = test.addObjectPropertyIsReflexive("hasFather");
+			result = test.addObjectPropertyIsIrreflexive("hasFather");
+			result = test.addObjectPropertyIsInverseFunctional("hasFather");
+			result = test.addObjectPropertyIsAsymmetric("hasFather");
+			result = test.addObjectPropertyIsFunctional("hasFather");
+			System.out.println(result);
+			result = test.addObjectPropertyTo2NamedIndividuals("hasFather","zane","john");*/
+			result = test.createObjectProperty("name");
+			//result = test.addObjectPropertyIsTransitive("name");
+			/*System.out.println(test.removeObjectPropertyIsTransitive("name"));
+			System.out.println(test.removeObjectPropertyIsTransitive("name"));
+			System.out.println(test.removeObjectPropertyIsTransitive("name"));
+			System.out.println(test.removeObjectPropertyIsTransitive("name"));
+			System.out.println(test.removeObjectPropertyIsTransitive("name"));
+			System.out.println(test.removeObjectPropertyIsTransitive("name"));
+			System.out.println(test.removeObjectPropertyIsTransitive("name"));*/
+			System.out.println(test.addCommentAnnotationToObjectProperty("name", "boop"));
+			//result = test.changeDataPropertyName("name", "nome");
+			//result = test.addCommentAnnotationToDataProperty("this is a comment", "name");
+			//System.out.println(result);
+			
+			//test.getDataPropertyDetails("name");
+			/*result = test.addNamedIndividualBelongsToClass("Person","john");
 			result = test.addCommentAnnotationToClass("IDK what to put here","Animal");
 			result = test.addCommentAnnotationToNamedIndividual("a darling baby","zane");
 			System.out.println(result);
@@ -587,8 +1140,9 @@ public class OWLInteraction {
 			result = test.changeClassName("Animal","Hello");
 			System.out.println(result);*/
 			
-			for(String c : test.getDataProperties())
-				System.out.println(c);
+			/*for(String c : test.getDataProperties())
+				System.out.println(c);*/
+			
 		} catch (OWLOntologyCreationException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
