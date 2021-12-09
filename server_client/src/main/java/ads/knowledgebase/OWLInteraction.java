@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.json.JSONObject;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
@@ -18,12 +19,15 @@ import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDocumentFormat;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -374,6 +378,24 @@ public class OWLInteraction {
 	
 	
 	
+	public String addDataPropertyToNamedIndividual(String namedIndividual, String dataProperty, String value) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		
+		OWLDataProperty dp = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, dataProperty));
+		OWLNamedIndividual ni = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual));
+		
+		OWLDataPropertyAssertionAxiom  axiom = factory.getOWLDataPropertyAssertionAxiom(dp, ni, value);
+		manager.addAxiom(ontology, axiom);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	/**
 	 * Adds the object property is functional
 	 * @param objectProperty name of the object property
@@ -624,6 +646,100 @@ public class OWLInteraction {
 		OWLClass parentClass = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, parent));
 		OWLClass childClass = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, child));
 		OWLAxiom axiom = factory.getOWLSubClassOfAxiom(childClass, parentClass);
+		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+		manager.applyChanges(remover);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public String removeCommentFromClass(String className, String comment) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		
+		OWLClass entity = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, className));
+		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(comment));
+		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(entity.getIRI(), anno);
+		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+		manager.applyChanges(remover);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public String removeCommentFromNamedIndividual(String individual, String comment) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		
+		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, individual));
+		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(comment));
+		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(entity.getIRI(), anno);
+		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+		manager.applyChanges(remover);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public String removeNamedIndividualBelongsToClass(String className, String namedIndividual) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		
+		OWLNamedIndividual ni = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual));
+		OWLClass oc = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, className));
+		
+		OWLClassAssertionAxiom  axiom = factory.getOWLClassAssertionAxiom(oc, ni);
+		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+		manager.applyChanges(remover);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public String removeDataPropertyFromNamedIndividual(String namedIndividual, String dataProperty, String value) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		
+		OWLNamedIndividual ni = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual));
+		OWLDataProperty dp = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, dataProperty));
+		
+		OWLDataPropertyAssertionAxiom  axiom = factory.getOWLDataPropertyAssertionAxiom(dp, ni, value);
+		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
+		manager.applyChanges(remover);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			manager.saveOntology(ontology, outputStream);
+			return new String(outputStream.toByteArray());
+		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public String removeObjectPropertyFrom2NamedIndividuals(String objectProperty, String namedIndividual1, String namedIndividual2) {
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		
+		OWLNamedIndividual ni1 = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual1));
+		OWLNamedIndividual ni2 = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual2));
+		OWLObjectProperty op = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
+		
+		OWLObjectPropertyAssertionAxiom  axiom = factory.getOWLObjectPropertyAssertionAxiom(op, ni1, ni2);
 		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
 		manager.applyChanges(remover);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -1019,6 +1135,26 @@ public class OWLInteraction {
 	}
 	
 	
+	public List<String> getClassComments(String name){
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLClass entity = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, name));
+		Stream<OWLAnnotation> anotations = EntitySearcher.getAnnotations(entity.getIRI(), ontology);
+		List<String> comments = new ArrayList<>();
+		for(OWLAnnotation s : anotations.toList())
+			comments.add(s.getValue().toString().substring(s.getValue().toString().indexOf("\"")+1, s.getValue().toString().indexOf("\"^^")));
+		return comments;
+	}
+	
+	public List<String> getIndividualComments(String name){
+		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, name));
+		Stream<OWLAnnotation> anotations = EntitySearcher.getAnnotations(entity.getIRI(), ontology);
+		List<String> comments = new ArrayList<>();
+		for(OWLAnnotation s : anotations.toList())
+			comments.add(s.getValue().toString().substring(s.getValue().toString().indexOf("\"")+1, s.getValue().toString().indexOf("\"^^")));
+		return comments;
+	}
+	
 	public List<String> getDataPropertyComments(String name){
 		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
 		OWLDataProperty entity = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, name));
@@ -1038,6 +1174,55 @@ public class OWLInteraction {
 			comments.add(s.getValue().toString().substring(s.getValue().toString().indexOf("\"")+1, s.getValue().toString().indexOf("\"^^")));
 		return comments;
 	}
+	
+	public List<String> getParentClasses(String name){;
+		String prefix = format.asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLClass entity = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, name));
+		List<String> parents = new ArrayList<>();
+		for(OWLClassExpression s : EntitySearcher.getSuperClasses(entity, ontology).toList())
+			parents.add(s.asOWLClass().getIRI().getFragment());
+		return parents;
+	}
+	
+	public String getNamedIndividualClass(String name){
+		String prefix = format.asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, name));		
+		for (OWLClassAssertionAxiom ax: ontology.getClassAssertionAxioms(entity)) {
+			String fullString = ax.toString();
+			String className = fullString.substring(fullString.indexOf("#")+1,fullString.indexOf(">"));
+			return className;
+		}
+		return "";
+	}
+	
+	public Map<String, String> getNamedIndividualDataProperties(String name){
+		String prefix = format.asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, name));
+		Map<String,String> map = new HashMap<>();		
+		for (OWLDataPropertyAssertionAxiom ax: ontology.getDataPropertyAssertionAxioms(entity)) {
+			String pValue = ax.getObject().toString();
+			pValue = pValue.substring(pValue.indexOf("\"") + 1, pValue.indexOf("\"^^"));
+			String pName = ax.getProperty().toString();
+			pName = pName.substring(pName.indexOf("#") + 1, pName.length()-1);
+		    map.put(pName, pValue);
+		}
+		return map;
+	}
+	
+	public Map<String, String> getNamedIndividualObjectProperties(String name){
+		String prefix = format.asPrefixOWLDocumentFormat().getDefaultPrefix();
+		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, name));
+		Map<String,String> map = new HashMap<>();		
+		for (OWLObjectPropertyAssertionAxiom ax: ontology.getObjectPropertyAssertionAxioms(entity)) {
+			String pValue = ax.getObject().toString();
+			pValue = pValue.substring(pValue.indexOf("#") + 1, pValue.length()-1);
+			String pName = ax.getProperty().toString();
+			pName = pName.substring(pName.indexOf("#") + 1, pName.length()-1);
+		    map.put(pName, pValue);
+		}
+		return map;
+	}
+	
 	
 	public boolean getObjectPropertyIsTransitive(String name) {
 		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
@@ -1093,7 +1278,7 @@ public class OWLInteraction {
 		try {
 			OWLInteraction test = new OWLInteraction(new FileInputStream("test.owl"));
 			String result = "";
-			/*result = test.createClass("Animal");
+			result = test.createClass("Animal");
 			result = test.createClass("Superhero");
 			result = test.createClass("Human");
 			result = test.createClass("Person");
@@ -1101,7 +1286,7 @@ public class OWLInteraction {
 			result = test.createNamedIndividual("Superman");
 			result = test.createNamedIndividual("zane");
 			result = test.createNamedIndividual("john");
-			result = test.addIsSubclassOf("Animal", "Human");
+			result = test.addIsSubclassOf("Animal", "Person");
 			result = test.addIsSubclassOf("Human", "Person");
 			result = test.createObjectProperty("hasFather");
 			result = test.addObjectPropertyIsTransitive("hasFather");
@@ -1111,9 +1296,8 @@ public class OWLInteraction {
 			result = test.addObjectPropertyIsInverseFunctional("hasFather");
 			result = test.addObjectPropertyIsAsymmetric("hasFather");
 			result = test.addObjectPropertyIsFunctional("hasFather");
-			System.out.println(result);
-			result = test.addObjectPropertyTo2NamedIndividuals("hasFather","zane","john");*/
-			result = test.createObjectProperty("name");
+			result = test.addObjectPropertyTo2NamedIndividuals("hasFather","zane","john");
+			//result = test.createObjectProperty("name");
 			//result = test.addObjectPropertyIsTransitive("name");
 			/*System.out.println(test.removeObjectPropertyIsTransitive("name"));
 			System.out.println(test.removeObjectPropertyIsTransitive("name"));
@@ -1122,7 +1306,15 @@ public class OWLInteraction {
 			System.out.println(test.removeObjectPropertyIsTransitive("name"));
 			System.out.println(test.removeObjectPropertyIsTransitive("name"));
 			System.out.println(test.removeObjectPropertyIsTransitive("name"));*/
-			System.out.println(test.addCommentAnnotationToObjectProperty("name", "boop"));
+			
+			//System.out.println(test.addCommentAnnotationToObjectProperty("name", "boop"));
+			test.createDataProperty("size");
+			result = test.addDataPropertyToNamedIndividual("zane", "size", "1.5");
+			result = test.addNamedIndividualBelongsToClass("Person", "zane");
+			System.out.println(result);
+			test.getNamedIndividualDataProperties("zane");
+			test.getNamedIndividualObjectProperties("zane");
+			test.getNamedIndividualClass("zane");
 			//result = test.changeDataPropertyName("name", "nome");
 			//result = test.addCommentAnnotationToDataProperty("this is a comment", "name");
 			//System.out.println(result);
@@ -1146,6 +1338,5 @@ public class OWLInteraction {
 		} catch (OWLOntologyCreationException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
 	}
 }

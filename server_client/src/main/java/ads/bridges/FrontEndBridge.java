@@ -117,8 +117,16 @@ public class FrontEndBridge {
 				editor.deleteStuff(body);
 				break;
 			case "editClass":
+				editor.editClassPage(body);
+				break;
+			case "changeClass":
+				editor.changeClass(body);
 				break;
 			case "editIndividual":
+				editor.editIndividualPage(body);
+				break;
+			case "changeIndividual":
+				editor.changeIndividual(body);
 				break;
 			case "editDataProperty":
 				editor.editDataPropertyPage(body);
@@ -140,6 +148,7 @@ public class FrontEndBridge {
 		}
 			
 	}
+	
 	
 	/**
 	 * Sends the reply when the received message has a type of request it doesn't recognise

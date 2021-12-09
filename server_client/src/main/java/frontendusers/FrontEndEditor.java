@@ -1,8 +1,12 @@
 package frontendusers;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -612,6 +616,605 @@ public class FrontEndEditor extends FrontEndUser{
 		CloseableHttpResponse response2 = httpclient.execute(httppost);
 	}
 	
+	
+	public void editIndividualPage(String body) throws ClientProtocolException, IOException {
+		String id = objectMapper.readTree(body)
+				.get("client_id")
+				.asText();
+		String name = objectMapper.readTree(body)
+				.get("data")
+				.get("individualToEdit")
+				.asText();
+		
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("id", id));
+		params.add(new BasicNameValuePair("nextPage", "editIndividual"));
+		params.add(new BasicNameValuePair("individual", name));
+		
+		if(Editor.individualHasComments(name)) {
+			params.add(new BasicNameValuePair("hasComment", "true"));
+			params.add(new BasicNameValuePair("comment", Editor.getIndividualComment(name)));
+		}
+		else {
+			params.add(new BasicNameValuePair("hasComment", "false"));
+			params.add(new BasicNameValuePair("comment", ""));
+		}
+		
+		String parentClass = Editor.getIndividualClass(name);
+		if(parentClass == null) {
+			params.add(new BasicNameValuePair("parentClass", ""));
+		}
+		else {
+			params.add(new BasicNameValuePair("parentClass", parentClass));
+		}
+		
+		List<String> classes = Editor.getClasses();
+		if(classes == null || classes.size() == 0) {
+			params.add(new BasicNameValuePair("multiple_classes", "false"));
+			params.add(new BasicNameValuePair("classes", ""));
+		}
+		else if(classes.size() == 1) {
+			params.add(new BasicNameValuePair("multiple_classes", "false"));
+			params.add(new BasicNameValuePair("classes", classes.get(0)));
+		}
+		else {
+			params.add(new BasicNameValuePair("multiple_classes", "true"));
+			for(String s : classes)
+				params.add(new BasicNameValuePair("classes", s));
+		}
+		
+		List<String> otherIndividuals = Editor.getNamedIndividuals();
+		if(otherIndividuals.contains(name))
+			otherIndividuals.remove(name);
+		if(otherIndividuals == null || otherIndividuals.size() == 0) {
+			params.add(new BasicNameValuePair("multiple_other_individuals", "false"));
+			params.add(new BasicNameValuePair("otherIndividuals", ""));
+		}
+		else if(otherIndividuals.size() == 1) {
+			params.add(new BasicNameValuePair("multiple_other_individuals", "false"));
+			params.add(new BasicNameValuePair("otherIndividuals", otherIndividuals.get(0)));
+		}
+		else {
+			params.add(new BasicNameValuePair("multiple_other_individuals", "true"));
+			for(String s : otherIndividuals)
+				params.add(new BasicNameValuePair("otherIndividuals", s));
+		}
+		
+		Map<String,String> usedDataProperties = Editor.getIndividualDataProperties(name);
+		if(usedDataProperties == null || usedDataProperties.keySet().size() == 0) {
+			params.add(new BasicNameValuePair("multiple_used_data_properties", "false"));
+			params.add(new BasicNameValuePair("usedDataProperties", ""));
+		}
+		else if(usedDataProperties.keySet().size() == 1) {
+			params.add(new BasicNameValuePair("multiple_used_data_properties", "false"));
+			for(String key : usedDataProperties.keySet())
+				params.add(new BasicNameValuePair("usedDataProperties", key + ": " + usedDataProperties.get(key)));
+		}
+		else {
+			params.add(new BasicNameValuePair("multiple_used_data_properties", "true"));
+			System.out.println(usedDataProperties.keySet());
+			for(String key : usedDataProperties.keySet())
+				params.add(new BasicNameValuePair("usedDataProperties", key + ": " + usedDataProperties.get(key)));
+		}
+		
+		
+		List<String> otherDataProperties = Editor.getDataProperties();
+		if(otherDataProperties == null || otherDataProperties.size() == 0) {
+			params.add(new BasicNameValuePair("multiple_other_data_properties", "false"));
+			params.add(new BasicNameValuePair("otherDataProperties", ""));
+		}
+		else if(otherDataProperties.size() == 1) {
+			params.add(new BasicNameValuePair("multiple_other_data_properties", "false"));
+			params.add(new BasicNameValuePair("otherDataProperties", otherDataProperties.get(0)));
+		}
+		else {
+			params.add(new BasicNameValuePair("multiple_other_data_properties", "true"));
+			for(String s : otherDataProperties)
+				params.add(new BasicNameValuePair("otherDataProperties", s));
+		}
+		
+		Map<String, String> usedObjectProperties = Editor.getIndividualObjectProperties(name);
+		if(usedObjectProperties == null || usedObjectProperties.size() == 0) {
+			params.add(new BasicNameValuePair("multiple_used_object_properties", "false"));
+			params.add(new BasicNameValuePair("usedObjectProperties", ""));
+		}
+		else if(usedObjectProperties.keySet().size() == 1) {
+			params.add(new BasicNameValuePair("multiple_used_object_properties", "false"));
+			for(String key : usedObjectProperties.keySet())
+				params.add(new BasicNameValuePair("usedObjectProperties", key + ": " + usedObjectProperties.get(key)));
+		}
+		else {
+			params.add(new BasicNameValuePair("multiple_used_object_properties", "true"));
+			for(String key : usedObjectProperties.keySet())
+				params.add(new BasicNameValuePair("usedObjectProperties", key + ": " + usedObjectProperties.get(key)));
+		}
+		
+		
+		List<String> otherObjectProperties = Editor.getObjectProperties();
+		if(otherObjectProperties == null || otherObjectProperties.size() == 0) {
+			params.add(new BasicNameValuePair("multiple_other_object_properties", "false"));
+			params.add(new BasicNameValuePair("otherObjectProperties", ""));
+		}
+		else if(usedObjectProperties.size() == 1) {
+			params.add(new BasicNameValuePair("multiple_other_object_properties", "false"));
+			params.add(new BasicNameValuePair("otherObjectProperties", otherObjectProperties.get(0)));
+		}
+		else {
+			params.add(new BasicNameValuePair("multiple_other_object_properties", "true"));
+			for(String s : otherObjectProperties)
+				params.add(new BasicNameValuePair("otherObjectProperties", s));
+		}
+		
+		
+		
+		HttpPost httppost = new HttpPost(uri+"/server_client_post");
+		httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		CloseableHttpResponse response2 = httpclient.execute(httppost);
+	}
+	
+	public void changeIndividual(String body) throws ClientProtocolException, IOException {
+		String id = null;
+		String email = null;
+		String commit = null;
+		String oldName = null;
+		
+		try {
+			id = objectMapper.readTree(body)
+					.get("client_id")
+					.asText();
+			email = objectMapper.readTree(body)
+					.get("data")
+					.get("email")
+					.asText();
+			commit = objectMapper.readTree(body)
+					.get("data")
+					.get("commitMessage")
+					.asText();
+			oldName = objectMapper.readTree(body)
+					.get("data")
+					.get("oldName")
+					.asText();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+		String newName = null;
+		try {
+			String changeName = objectMapper.readTree(body)
+					.get("data")
+					.get("changeName")
+					.asText();
+			if(changeName.equals("on")) {
+				newName = objectMapper.readTree(body)
+						.get("data")
+						.get("newName")
+						.asText();
+			}	
+		} catch(Exception e) {}
+		
+		//removeParent
+		boolean removeParent = false;
+		try {
+			String removeParentIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("removeParent")
+					.asText();
+			if(removeParentIsOn.equals("on"))
+				removeParent = true;
+		} catch(Exception e) {}
+
+		//addParent
+		//parentClass
+		String parentClass = null;
+		try {
+			String addParentIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("addParent")
+					.asText();
+			if(addParentIsOn.equals("on")) {
+				parentClass = objectMapper.readTree(body)
+						.get("data")
+						.get("parentClass")
+						.asText();
+			}
+		} catch(Exception e) {}
+
+		//removeDataProperty
+		//dataPropertyToRemove
+		String dataPropertyToRemove = null;
+		String removeDataProperty = null;
+		String removeValue = null;
+		try {
+			String removeDataPropertyIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("removeDataProperty")
+					.asText();
+			if(removeDataPropertyIsOn.equals("on")) {
+				dataPropertyToRemove = objectMapper.readTree(body)
+						.get("data")
+						.get("dataPropertyToRemove")
+						.asText();
+				removeValue = dataPropertyToRemove.substring(dataPropertyToRemove.indexOf(" ")+1);
+				removeDataProperty = dataPropertyToRemove.substring(0,dataPropertyToRemove.indexOf(":"));
+			}
+		} catch(Exception e) {}
+
+		//changeDataProperty
+		//dataPropertyToChange
+		//changeValue
+		String dataPropertyToChange = null;
+		String changeValue = null;
+		String oldValue = null;
+		String changeDataProperty = null;
+		try {
+			String changeDataPropertyIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("changeDataProperty")
+					.asText();
+			if(changeDataPropertyIsOn.equals("on")) {
+				dataPropertyToChange = objectMapper.readTree(body)
+						.get("data")
+						.get("dataPropertyToChange")
+						.asText();
+				changeValue = objectMapper.readTree(body)
+						.get("data")
+						.get("changeValue")
+						.asText();
+				oldValue = dataPropertyToChange.substring(dataPropertyToChange.indexOf(" ")+1);
+				changeDataProperty = dataPropertyToChange.substring(0,dataPropertyToChange.indexOf(":"));
+			}
+		} catch(Exception e) {}
+		
+
+
+		//addDataProperty
+		//dataPropertyToAdd
+		//newValue
+		String dataPropertyToAdd = null;
+		String newValue = null;
+		try {
+			String addDataPropertyIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("changeDataProperty")
+					.asText();
+			if(addDataPropertyIsOn.equals("on")) {
+				dataPropertyToAdd = objectMapper.readTree(body)
+						.get("data")
+						.get("dataPropertyToAdd")
+						.asText();
+				newValue = objectMapper.readTree(body)
+						.get("data")
+						.get("newValue")
+						.asText();
+			}
+		} catch(Exception e) {}
+
+		//removeObjectProperty
+		//objectPropertyToRemove
+		String objectPropertyToRemove = null;
+		String removeObjectProperty = null;
+		String removeIndividual = null;
+		try {
+			String removeObjectPropertyIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("removeObjectProperty")
+					.asText();
+			if(removeObjectPropertyIsOn.equals("on")) {
+				objectPropertyToRemove = objectMapper.readTree(body)
+						.get("data")
+						.get("objectPropertyToRemove")
+						.asText();
+				removeIndividual = objectPropertyToRemove.substring(objectPropertyToRemove.indexOf(" ")+1);
+				removeObjectProperty = objectPropertyToRemove.substring(0,objectPropertyToRemove.indexOf(":"));
+			}
+		} catch(Exception e) {}
+
+		//addObjectProperty
+		//objectPropertyToAdd
+		//newConnectedIndividual
+		String objectPropertyToAdd = null;
+		String newConnectedIndividual = null;
+		try {
+			String addObjectPropertyIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("changeDataProperty")
+					.asText();
+			if(addObjectPropertyIsOn.equals("on")) {
+				objectPropertyToAdd = objectMapper.readTree(body)
+						.get("data")
+						.get("objectPropertyToAdd")
+						.asText();
+				newConnectedIndividual = objectMapper.readTree(body)
+						.get("data")
+						.get("newConnectedIndividual")
+						.asText();
+			}
+		} catch(Exception e) {}
+		
+		
+		boolean deleteComment = false;
+		try {
+			String deleteCommentIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("deleteComment")
+					.asText();
+			if(deleteCommentIsOn.equals("on"))
+				deleteComment = true;
+		} catch(Exception e) {}
+		
+		
+		boolean addComment = false;
+		try {
+			String addCommentIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("addComment")
+					.asText();
+			if(addCommentIsOn.equals("on"))
+				addComment = true;
+		} catch(Exception e) {}
+		
+		boolean changeComment = false;
+		try {
+			String changeCommentIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("changeComment")
+					.asText();
+			if(changeCommentIsOn.equals("on"))
+				changeComment = true;
+		} catch(Exception e) {}
+		
+		
+		String newComment = null;
+		if(changeComment || addComment) {
+			try {
+				newComment = objectMapper.readTree(body)
+						.get("data")
+						.get("newComment")
+						.asText();
+			} catch(Exception e) {}
+		}
+		
+		if(changeComment)
+			deleteComment = true;
+		
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		
+		boolean result = false;
+		try {
+			
+			result = Editor.changeNamedIndividual(commit, email, oldName, newName, deleteComment, newComment, removeParent, parentClass,
+					dataPropertyToAdd, newValue, objectPropertyToAdd, newConnectedIndividual,
+					changeDataProperty, oldValue, changeValue, removeObjectProperty, removeIndividual,
+					removeDataProperty, removeValue);
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(result)
+			params.add(new BasicNameValuePair("message", "Operation Successful"));
+		else
+			params.add(new BasicNameValuePair("message", "Failed Operation"));
+		
+		params.add(new BasicNameValuePair("id", id));
+		params.add(new BasicNameValuePair("nextPage", "editor"));
+		
+		params = fillUpEditorPage(params);
+		
+		HttpPost httppost = new HttpPost(uri+"/server_client_post");
+		httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		CloseableHttpResponse response2 = httpclient.execute(httppost);	
+	}
+		
+		
+		public void editClassPage(String body) throws ClientProtocolException, IOException {
+			String id = objectMapper.readTree(body)
+					.get("client_id")
+					.asText();
+			String name = objectMapper.readTree(body)
+					.get("data")
+					.get("classToEdit")
+					.asText();
+			
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params.add(new BasicNameValuePair("id", id));
+			params.add(new BasicNameValuePair("nextPage", "editClass"));
+			params.add(new BasicNameValuePair("className", name));
+			
+			if(Editor.classHasComments(name)) {
+				params.add(new BasicNameValuePair("hasComment", "true"));
+				params.add(new BasicNameValuePair("comment", Editor.getClassComment(name)));
+			}
+			else {
+				params.add(new BasicNameValuePair("hasComment", "false"));
+				params.add(new BasicNameValuePair("comment", ""));
+			}
+			
+			List<String> parentClasses = Editor.getParentClasses(name);
+			if(parentClasses == null || parentClasses.size() == 0) {
+				params.add(new BasicNameValuePair("multiple_parent_classes", "false"));
+				params.add(new BasicNameValuePair("parentClasses", ""));
+			}
+			else if(parentClasses.size() == 1) {
+				params.add(new BasicNameValuePair("multiple_parent_classes", "false"));
+				params.add(new BasicNameValuePair("parentClasses", parentClasses.get(0)));
+			}
+			else {
+				params.add(new BasicNameValuePair("multiple_parent_classes", "true"));
+				for(String s : parentClasses)
+					params.add(new BasicNameValuePair("parentClasses", s));
+			}
+			
+			List<String> otherClasses = Editor.getNotParentClasses(name);
+			if(otherClasses == null || otherClasses.size() == 0) {
+				params.add(new BasicNameValuePair("multiple_other_classes", "false"));
+				params.add(new BasicNameValuePair("otherClasses", ""));
+			}
+			else if(otherClasses.size() == 1) {
+				params.add(new BasicNameValuePair("multiple_other_classes", "false"));
+				params.add(new BasicNameValuePair("otherClasses", otherClasses.get(0)));
+			}
+			else {
+				params.add(new BasicNameValuePair("multiple_other_classes", "true"));
+				for(String s : otherClasses)
+					params.add(new BasicNameValuePair("otherClasses", s));
+			}
+			
+			
+			HttpPost httppost = new HttpPost(uri+"/server_client_post");
+			httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			CloseableHttpResponse response2 = httpclient.execute(httppost);
+		}
+		
+		public void changeClass(String body) throws ClientProtocolException, IOException {
+			String id = null;
+			String email = null;
+			String commit = null;
+			String oldName = null;
+			
+			try {
+				id = objectMapper.readTree(body)
+						.get("client_id")
+						.asText();
+				email = objectMapper.readTree(body)
+						.get("data")
+						.get("email")
+						.asText();
+				commit = objectMapper.readTree(body)
+						.get("data")
+						.get("commitMessage")
+						.asText();
+				oldName = objectMapper.readTree(body)
+						.get("data")
+						.get("oldName")
+						.asText();
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		String newName = null;
+		try {
+			String changeName = objectMapper.readTree(body)
+					.get("data")
+					.get("changeName")
+					.asText();
+			if(changeName.equals("on")) {
+				newName = objectMapper.readTree(body)
+						.get("data")
+						.get("newName")
+						.asText();
+			}	
+		} catch(Exception e) {}
+		
+		String parentToAdd = null;
+		try {
+			String addParent = objectMapper.readTree(body)
+					.get("data")
+					.get("addParent")
+					.asText();
+			if(addParent.equals("on")) {
+				parentToAdd = objectMapper.readTree(body)
+						.get("data")
+						.get("parentToAdd")
+						.asText();
+			}	
+		} catch(Exception e) {}
+		
+		
+		String parentToRemove = null;
+		try {
+			String removeParent = objectMapper.readTree(body)
+					.get("data")
+					.get("removeParent")
+					.asText();
+			if(removeParent.equals("on")) {
+				parentToRemove = objectMapper.readTree(body)
+						.get("data")
+						.get("parentToRemove")
+						.asText();
+			}	
+		} catch(Exception e) {}
+		
+		
+		
+		boolean deleteComment = false;
+		try {
+			String deleteCommentIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("deleteComment")
+					.asText();
+			if(deleteCommentIsOn.equals("on"))
+				deleteComment = true;
+		} catch(Exception e) {}
+		
+		
+		boolean addComment = false;
+		try {
+			String addCommentIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("addComment")
+					.asText();
+			if(addCommentIsOn.equals("on"))
+				addComment = true;
+		} catch(Exception e) {}
+		
+		boolean changeComment = false;
+		try {
+			String changeCommentIsOn = objectMapper.readTree(body)
+					.get("data")
+					.get("changeComment")
+					.asText();
+			if(changeCommentIsOn.equals("on"))
+				changeComment = true;
+		} catch(Exception e) {}
+		
+		
+		String newComment = null;
+		if(changeComment || addComment) {
+			System.out.println("got here?");
+			try {
+				newComment = objectMapper.readTree(body)
+						.get("data")
+						.get("newComment")
+						.asText();
+			} catch(Exception e) {}
+		}
+		
+		if(changeComment)
+			deleteComment = true;
+		
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		
+		boolean result = false;
+		try {
+			result = Editor.changeClass(commit, email, oldName, newName, deleteComment, newComment, parentToAdd, parentToRemove);
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(result)
+			params.add(new BasicNameValuePair("message", "Operation Successful"));
+		else
+			params.add(new BasicNameValuePair("message", "Failed Operation"));
+		
+		params.add(new BasicNameValuePair("id", id));
+		params.add(new BasicNameValuePair("nextPage", "editor"));
+		
+		params = fillUpEditorPage(params);
+		
+		HttpPost httppost = new HttpPost(uri+"/server_client_post");
+		httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		CloseableHttpResponse response2 = httpclient.execute(httppost);
+	}
+	
+	//public void editIndividualPage(String body);
+	
 	/**
 	 * Processes and replies to the frontend client when it wants to edit a data property
 	 * It only retrieves the information of the picked data property
@@ -640,7 +1243,7 @@ public class FrontEndEditor extends FrontEndUser{
 			params.add(new BasicNameValuePair("comment", Editor.getdataPropertyComment(name)));
 		}
 		else {
-			params.add(new BasicNameValuePair("comment", "false"));
+			params.add(new BasicNameValuePair("hasComment", "false"));
 			params.add(new BasicNameValuePair("comment", ""));
 		}
 		
@@ -715,7 +1318,7 @@ public class FrontEndEditor extends FrontEndUser{
 		try {
 			String addCommentIsOn = objectMapper.readTree(body)
 					.get("data")
-					.get("deleteComment")
+					.get("addComment")
 					.asText();
 			if(addCommentIsOn.equals("on"))
 				addComment = true;
@@ -770,6 +1373,7 @@ public class FrontEndEditor extends FrontEndUser{
 		CloseableHttpResponse response2 = httpclient.execute(httppost);
 	}
 	
+	
 	/**
 	 * Retrieved the information about an object property so the client can then ask for changes
 	 * @param body of the received message
@@ -796,7 +1400,7 @@ public class FrontEndEditor extends FrontEndUser{
 			params.add(new BasicNameValuePair("comment", Editor.getObjectPropertyComment(name)));
 		}
 		else {
-			params.add(new BasicNameValuePair("comment", "false"));
+			params.add(new BasicNameValuePair("hasComment", "false"));
 			params.add(new BasicNameValuePair("comment", ""));
 		}
 		
@@ -915,7 +1519,7 @@ public class FrontEndEditor extends FrontEndUser{
 		try {
 			String addCommentIsOn = objectMapper.readTree(body)
 					.get("data")
-					.get("deleteComment")
+					.get("addComment")
 					.asText();
 			if(addCommentIsOn.equals("on"))
 				addComment = true;
