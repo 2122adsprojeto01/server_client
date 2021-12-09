@@ -1,6 +1,7 @@
 package ads.users;
 
 import java.util.List;
+import java.util.Map;
 
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
@@ -226,6 +227,209 @@ public class Editor {
 			return null;
 		}
 	}
+	
+	
+	public static boolean classHasComments(String name) {
+		try {
+			String file = repository.getOwlFileName();
+			OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
+			if(owl.getClassComments(name).size() > 0)
+				return true;
+			else
+				return false;
+		} catch (OWLOntologyCreationException e) {
+			return false;
+		}
+	}
+	
+	public static String getClassComment(String name) {
+		try {
+			String file = repository.getOwlFileName();
+			OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
+			return owl.getClassComments(name).get(0);
+		} catch (OWLOntologyCreationException e) {
+			return "";
+		}
+	}
+	
+	public static List<String> getParentClasses(String name){
+		try {
+			String file = repository.getOwlFileName();
+			OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
+			return owl.getParentClasses(name);
+		} catch (OWLOntologyCreationException e) {
+			return null;
+		}
+	}
+	
+	public static List<String> getNotParentClasses(String name){
+		try {
+			String file = repository.getOwlFileName();
+			OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
+			List<String> notParents = owl.getClasses();
+			for(String s : getParentClasses(name))
+				notParents.remove(s);
+			if(notParents.contains(name))
+				notParents.remove(name);
+			return notParents;
+		} catch (OWLOntologyCreationException e) {
+			return null;
+		}
+	}
+	
+	public static boolean changeClass(String commit, String email, String oldName, String newName, boolean deleteComment, String newComment, String parentToAdd, String parentToRemove) throws OWLOntologyCreationException {
+		String file = repository.getOwlFileName();
+		OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
+		String content = null;
+		if(!deleteComment && newComment != null) {
+			content = owl.addCommentAnnotationToClass(oldName, newComment);
+		}
+		else if(newComment != null) {
+			content = owl.removeCommentFromClass(oldName, owl.getClassComments(oldName).get(0));
+			content = owl.addCommentAnnotationToClass(oldName, newComment);
+		}
+		else if(classHasComments(oldName)) {
+			content = owl.removeCommentFromClass(oldName, owl.getClassComments(oldName).get(0));
+		}
+		
+		if(parentToAdd != null) 
+			content = owl.addIsSubclassOf(parentToAdd, oldName);
+		
+		if(parentToRemove != null)
+			content = owl.removeIsSubclassOf(parentToRemove, oldName);
+		
+		if(newName != null) {
+			content = owl.changeClassName(oldName, newName);
+			//System.out.println(content);
+		}
+		
+		if(content != null) {
+			makeContribuition(file, content, commit, email);
+			return true;
+		}
+		return false;		
+	}
+	
+	public static Map<String, String> getIndividualDataProperties(String name){
+		try {
+			String file = repository.getOwlFileName();
+			OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
+			return owl.getNamedIndividualDataProperties(name);
+		} catch (OWLOntologyCreationException e) {
+			return null;
+		}
+	}
+	
+	public static Map<String, String> getIndividualObjectProperties(String name){
+		try {
+			String file = repository.getOwlFileName();
+			OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
+			return owl.getNamedIndividualObjectProperties(name);
+		} catch (OWLOntologyCreationException e) {
+			return null;
+		}
+	}
+	
+	public static boolean individualHasComments(String name) {
+		try {
+			String file = repository.getOwlFileName();
+			OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
+			if(owl.getIndividualComments(name).size() > 0)
+				return true;
+			else
+				return false;
+		} catch (OWLOntologyCreationException e) {
+			return false;
+		}
+	}
+	
+	public static String getIndividualComment(String name) {
+		try {
+			String file = repository.getOwlFileName();
+			OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
+			return owl.getIndividualComments(name).get(0);
+		} catch (OWLOntologyCreationException e) {
+			return "";
+		}
+	}
+	
+	
+	public static String getIndividualClass(String name) {
+		try {
+			String file = repository.getOwlFileName();
+			OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
+			return owl.getNamedIndividualClass(name);
+		} catch (OWLOntologyCreationException e) {
+			return "";
+		}
+	}
+	
+	public static boolean changeNamedIndividual(String commit, String email, String oldName, String newName, boolean deleteComment, String newComment,
+			boolean removeParent, String parentClass, String dataPropertyToAdd, String newValue, String objectPropertyToAdd,
+			String newConnectedIndividual, String changeDataProperty, String oldValue, String changeValue, String removeObjectProperty, String removeIndividual,
+			String removeDataProperty, String removeValue) throws OWLOntologyCreationException {
+		
+		String file = repository.getOwlFileName();
+		OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
+		String content = null;
+		if(!deleteComment && newComment != null) {
+			content = owl.addCommentAnnotationToNamedIndividual(oldName, newComment);
+		}
+		else if(newComment != null) {
+			content = owl.removeCommentFromNamedIndividual(oldName, owl.getClassComments(oldName).get(0));
+			content = owl.addCommentAnnotationToNamedIndividual(oldName, newComment);
+		}
+		else if(individualHasComments(oldName)) {
+			content = owl.removeCommentFromNamedIndividual(oldName, owl.getClassComments(oldName).get(0));
+		}
+		
+		
+		if(removeParent) {
+			content = owl.removeNamedIndividualBelongsToClass(oldName, owl.getNamedIndividualClass(oldName));
+		}
+		
+		if(parentClass != null) {
+			content = owl.addNamedIndividualBelongsToClass(oldName, parentClass);
+		}
+		
+		if(dataPropertyToAdd != null && newValue != null) {
+			content = owl.addDataPropertyToNamedIndividual(oldName, dataPropertyToAdd, newValue);
+		}
+		
+		if(objectPropertyToAdd != null && newConnectedIndividual != null) {
+			content = owl.addObjectPropertyTo2NamedIndividuals(objectPropertyToAdd, oldName, newConnectedIndividual);
+		}
+		
+		if(changeDataProperty != null && oldValue != null && changeValue != null) {
+			content = owl.removeDataPropertyFromNamedIndividual(oldName, changeDataProperty, changeValue);
+			content = owl.addDataPropertyToNamedIndividual(oldName, changeDataProperty, changeValue);
+		}
+		
+		if(objectPropertyToAdd != null && newConnectedIndividual != null) {
+			content = owl.addObjectPropertyTo2NamedIndividuals(objectPropertyToAdd, oldName, newConnectedIndividual);
+		}
+		
+		if(removeObjectProperty != null && removeIndividual != null) {
+			content = owl.removeObjectPropertyFrom2NamedIndividuals(objectPropertyToAdd, oldName, removeIndividual);
+		}
+		
+		if(removeDataProperty != null && removeValue != null) {
+			content = owl.removeDataPropertyFromNamedIndividual(oldName, removeDataProperty, removeValue);
+		}
+		
+		
+		if(newName != null) {
+			content = owl.changeNamedIndividualName(oldName, newName);
+			//System.out.println(content);
+		}
+		
+		if(content != null) {
+			makeContribuition(file, content, commit, email);
+			return true;
+		}
+		return false;
+	}
+	
 	
 	/**
 	 * Checks if a data property has comments
