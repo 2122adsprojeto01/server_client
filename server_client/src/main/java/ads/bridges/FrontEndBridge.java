@@ -26,6 +26,7 @@ import ads.configurations.SiteConfigurations;
 import ads.users.Curator;
 import frontendusers.FrontEndCurator;
 import frontendusers.FrontEndEditor;
+import frontendusers.FrontEndQuery;
 import frontendusers.FrontEndViewer;
 
 /**
@@ -40,6 +41,7 @@ public class FrontEndBridge {
 	private FrontEndCurator curator;
 	private FrontEndEditor editor;
 	private FrontEndViewer viewer;
+	private FrontEndQuery query;
 	
 	/**
 	 * Creates the object from the location of the frontend site
@@ -51,6 +53,7 @@ public class FrontEndBridge {
 		this.curator = new FrontEndCurator(uri);
 		this.editor = new FrontEndEditor(uri);
 		this.viewer = new FrontEndViewer(uri);
+		this.query = new FrontEndQuery(uri);
 	}
 	
 	
@@ -144,6 +147,15 @@ public class FrontEndBridge {
 				break;
 			case "viewer":
 				viewer.getViewPageContent(body);
+				break;
+			case "queries":
+				query.getQueryPageContent(body);
+				break;
+			case "formQuery":
+				query.processFormQuery(body);
+				break;
+			case "stringQuery":
+				query.processStringQuery(body);
 				break;
 			default:
 				unknownRequest(body);
