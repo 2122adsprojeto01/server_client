@@ -434,7 +434,7 @@ public class FrontEndEditor extends FrontEndUser{
 		try {
 			String isOn = objectMapper.readTree(body)
 					.get("data")
-					.get("isSymetric")
+					.get("isSymmetric")
 					.asText();
 			if(isOn.equals("on"))
 			symmetric = true;
@@ -474,7 +474,7 @@ public class FrontEndEditor extends FrontEndUser{
 		try {
 			String isOn = objectMapper.readTree(body)
 					.get("data")
-					.get("isAsymetric")
+					.get("isAsymmetric")
 					.asText();
 			if(isOn.equals("on"))
 			asymmetric = true;
