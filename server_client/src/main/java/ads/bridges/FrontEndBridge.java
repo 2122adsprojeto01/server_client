@@ -26,6 +26,7 @@ import ads.configurations.SiteConfigurations;
 import ads.users.Curator;
 import frontendusers.FrontEndCurator;
 import frontendusers.FrontEndEditor;
+import frontendusers.FrontEndViewer;
 
 /**
  * A class that makes the bridge between the client requests and the appropriate frontenduser class function
@@ -38,6 +39,7 @@ public class FrontEndBridge {
 	private String uri;
 	private FrontEndCurator curator;
 	private FrontEndEditor editor;
+	private FrontEndViewer viewer;
 	
 	/**
 	 * Creates the object from the location of the frontend site
@@ -48,6 +50,7 @@ public class FrontEndBridge {
 		this.uri = uri;
 		this.curator = new FrontEndCurator(uri);
 		this.editor = new FrontEndEditor(uri);
+		this.viewer = new FrontEndViewer(uri);
 	}
 	
 	
@@ -140,6 +143,7 @@ public class FrontEndBridge {
 				editor.changeObjectProperty(body);
 				break;
 			case "viewer":
+				viewer.getViewPageContent(body);
 				break;
 			default:
 				unknownRequest(body);
