@@ -288,7 +288,7 @@ public class Editor {
 			content = owl.removeCommentFromClass(oldName, owl.getClassComments(oldName).get(0));
 			content = owl.addCommentAnnotationToClass(oldName, newComment);
 		}
-		else if(classHasComments(oldName)) {
+		else if(classHasComments(oldName) && deleteComment) {
 			content = owl.removeCommentFromClass(oldName, owl.getClassComments(oldName).get(0));
 		}
 		
@@ -372,6 +372,7 @@ public class Editor {
 		String file = repository.getOwlFileName();
 		OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
 		String content = null;
+		System.out.println("hey???");
 		if(!deleteComment && newComment != null) {
 			content = owl.addCommentAnnotationToNamedIndividual(oldName, newComment);
 		}
@@ -379,24 +380,31 @@ public class Editor {
 			content = owl.removeCommentFromNamedIndividual(oldName, owl.getClassComments(oldName).get(0));
 			content = owl.addCommentAnnotationToNamedIndividual(oldName, newComment);
 		}
-		else if(individualHasComments(oldName)) {
+		else if(individualHasComments(oldName) && deleteComment) {
 			content = owl.removeCommentFromNamedIndividual(oldName, owl.getClassComments(oldName).get(0));
 		}
 		
-		
+		System.out.println("b");
 		if(removeParent) {
 			content = owl.removeNamedIndividualBelongsToClass(oldName, owl.getNamedIndividualClass(oldName));
 		}
 		
+		System.out.println("y");
 		if(parentClass != null) {
 			content = owl.addNamedIndividualBelongsToClass(oldName, parentClass);
 		}
 		
+		System.out.println("e");
 		if(dataPropertyToAdd != null && newValue != null) {
 			content = owl.addDataPropertyToNamedIndividual(oldName, dataPropertyToAdd, newValue);
 		}
 		
+		System.out.println("bye");
+		System.out.println(oldName);
+		System.out.println(objectPropertyToAdd);
+		System.out.println(newConnectedIndividual);
 		if(objectPropertyToAdd != null && newConnectedIndividual != null) {
+			System.out.println("hello?");
 			content = owl.addObjectPropertyTo2NamedIndividuals(objectPropertyToAdd, oldName, newConnectedIndividual);
 		}
 		
@@ -490,7 +498,7 @@ public class Editor {
 			content = owl.removeCommentFromDataProperty(oldName, owl.getDataPropertyComments(oldName).get(0));
 			content = owl.addCommentAnnotationToDataProperty(oldName, newComment);
 		}
-		else if(dataPropertyHasComments(oldName))
+		else if(dataPropertyHasComments(oldName) && deleteComment)
 			content = owl.removeCommentFromDataProperty(oldName, owl.getDataPropertyComments(oldName).get(0));
 		
 		
@@ -691,7 +699,7 @@ public class Editor {
 			content = owl.removeCommentFromObjectProperty(oldName, owl.getDataPropertyComments(oldName).get(0));
 			content = owl.addCommentAnnotationToObjectProperty(oldName, newComment);
 		}
-		else if(objectPropertyHasComments(oldName))
+		else if(objectPropertyHasComments(oldName) && deleteComment)
 			content = owl.removeCommentFromObjectProperty(oldName, owl.getDataPropertyComments(oldName).get(0));
 
 		if(newName != null)
