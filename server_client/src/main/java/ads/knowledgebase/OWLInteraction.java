@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -103,10 +104,11 @@ public class OWLInteraction {
 	 * @since 0.1
 	 */
 	public String addCommentAnnotationToClass(String annotation, String entity) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(annotation));
 		OWLEntity en = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, entity));
 		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(en.getIRI(), anno);
+		System.out.println(axiom);
 		manager.addAxiom(ontology, axiom);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
@@ -126,7 +128,7 @@ public class OWLInteraction {
 	 * @since 0.1
 	 */
 	public String addCommentAnnotationToNamedIndividual(String annotation, String entity) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(annotation));
 		OWLEntity en = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, entity));
 		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(en.getIRI(), anno);
@@ -149,7 +151,7 @@ public class OWLInteraction {
 	 * @since 0.1
 	 */
 	public String addCommentAnnotationToDataProperty(String annotation, String entity) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(annotation));
 		OWLEntity en = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, entity));
 		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(en.getIRI(), anno);
@@ -173,7 +175,7 @@ public class OWLInteraction {
 	 * @since 0.2
 	 */
 	public String addCommentAnnotationToObjectProperty(String annotation, String entity) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(annotation));
 		OWLEntity en = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, entity));
 		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(en.getIRI(), anno);
@@ -219,7 +221,7 @@ public class OWLInteraction {
 	 * @since 0.1
 	 */
 	public String createClass(String className) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLClass entity = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, className));
 		OWLAxiom axiom = factory.getOWLDeclarationAxiom(entity);
 		manager.addAxiom(ontology, axiom);
@@ -240,7 +242,7 @@ public class OWLInteraction {
 	 * @since 0.1
 	 */
 	public String createDataProperty(String dataProperty) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLDataProperty entity = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, dataProperty));
 		OWLAxiom axiom = factory.getOWLDeclarationAxiom(entity);
 		manager.addAxiom(ontology, axiom);
@@ -261,7 +263,7 @@ public class OWLInteraction {
 	 * @since 0.1
 	 */
 	public String createNamedIndividual(String namedIndividual) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual));
 		OWLAxiom axiom = factory.getOWLDeclarationAxiom(entity);
 		manager.addAxiom(ontology, axiom);
@@ -282,7 +284,7 @@ public class OWLInteraction {
 	 * @since 0.1
 	 */
 	public String createObjectProperty(String objectProperty) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 		OWLAxiom axiom = factory.getOWLDeclarationAxiom(entity);
 		manager.addAxiom(ontology, axiom);
@@ -309,7 +311,7 @@ public class OWLInteraction {
 	 * @since 0.1
 	 */
 	public String addIsSubclassOf(String parent, String child) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLClass parentClass = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, parent));
 		OWLClass childClass = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, child));
 		OWLAxiom axiom = factory.getOWLSubClassOfAxiom(childClass, parentClass);
@@ -333,7 +335,7 @@ public class OWLInteraction {
 	 * @since 0.1
 	 */
 	public String addObjectPropertyTo2NamedIndividuals(String objectProperty, String individual1, String individual2) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		
 		OWLNamedIndividual ni1 = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, individual1));
 		OWLNamedIndividual ni2 = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, individual2));
@@ -359,7 +361,7 @@ public class OWLInteraction {
 	 * @since 0.1
 	 */
 	public String addNamedIndividualBelongsToClass(String className, String namedIndividual) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		
 		OWLNamedIndividual ni = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual));
 		OWLClass oc = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, className));
@@ -379,7 +381,7 @@ public class OWLInteraction {
 	
 	
 	public String addDataPropertyToNamedIndividual(String namedIndividual, String dataProperty, String value) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		
 		OWLDataProperty dp = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, dataProperty));
 		OWLNamedIndividual ni = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual));
@@ -403,7 +405,7 @@ public class OWLInteraction {
 	 * @since 0.2
 	 */
 	public String addObjectPropertyIsFunctional(String objectProperty) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 		OWLAxiom axiom = factory.getOWLFunctionalObjectPropertyAxiom(entity);
 		manager.addAxiom(ontology, axiom);
@@ -425,7 +427,7 @@ public class OWLInteraction {
 	 * @since 0.2
 	 */
 	public String addObjectPropertyIsAsymmetric(String objectProperty) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 		OWLAxiom axiom = factory.getOWLAsymmetricObjectPropertyAxiom(entity);
 		manager.addAxiom(ontology, axiom);
@@ -447,7 +449,7 @@ public class OWLInteraction {
 	 * @since 0.2
 	 */
 	public String addObjectPropertyIsInverseFunctional(String objectProperty) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 		OWLAxiom axiom = factory.getOWLInverseFunctionalObjectPropertyAxiom(entity);
 		manager.addAxiom(ontology, axiom);
@@ -469,7 +471,7 @@ public class OWLInteraction {
 	 * @since 0.2
 	 */
 	public String addObjectPropertyIsIrreflexive(String objectProperty) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 		OWLAxiom axiom = factory.getOWLIrreflexiveObjectPropertyAxiom(entity);
 		manager.addAxiom(ontology, axiom);
@@ -491,7 +493,7 @@ public class OWLInteraction {
 	 * @since 0.2
 	 */
 	public String addObjectPropertyIsReflexive(String objectProperty) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 		OWLAxiom axiom = factory.getOWLReflexiveObjectPropertyAxiom(entity);
 		manager.addAxiom(ontology, axiom);
@@ -513,7 +515,7 @@ public class OWLInteraction {
 	 * @since 0.2
 	 */
 	public String addObjectPropertyIsSymmetric(String objectProperty) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 		OWLAxiom axiom = factory.getOWLSymmetricObjectPropertyAxiom(entity);
 		manager.addAxiom(ontology, axiom);
@@ -535,7 +537,7 @@ public class OWLInteraction {
 	 * @since 0.2
 	 */
 	public String addObjectPropertyIsTransitive(String objectProperty) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 		OWLAxiom axiom = factory.getOWLTransitiveObjectPropertyAxiom(entity);
 		manager.addAxiom(ontology, axiom);
@@ -560,7 +562,7 @@ public class OWLInteraction {
 	 */
 	public String removeNamedIndividual(String namedIndividual) {
 		OWLEntityRemover remover = new OWLEntityRemover(Collections.singleton(ontology));
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual));
 		entity.accept(remover);
 		manager.applyChanges(remover.getChanges());
@@ -582,7 +584,7 @@ public class OWLInteraction {
 	 */
 	public String removeClass(String className) {
 		OWLEntityRemover remover = new OWLEntityRemover(Collections.singleton(ontology));
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLClass entity = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, className));
 		entity.accept(remover);
 		manager.applyChanges(remover.getChanges());
@@ -604,7 +606,7 @@ public class OWLInteraction {
 	 */
 	public String removeDataProperty(String dataProperty) {
 		OWLEntityRemover remover = new OWLEntityRemover(Collections.singleton(ontology));
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLDataProperty entity = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, dataProperty));
 		entity.accept(remover);
 		manager.applyChanges(remover.getChanges());
@@ -627,7 +629,7 @@ public class OWLInteraction {
 	 */
 	public String removeObjectProperty(String objectProperty) {
 		OWLEntityRemover remover = new OWLEntityRemover(Collections.singleton(ontology));
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 		entity.accept(remover);
 		manager.applyChanges(remover.getChanges());
@@ -642,12 +644,12 @@ public class OWLInteraction {
 	}
 	
 	public String removeIsSubclassOf(String parent, String child) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLClass parentClass = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, parent));
 		OWLClass childClass = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, child));
 		OWLAxiom axiom = factory.getOWLSubClassOfAxiom(childClass, parentClass);
 		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-		manager.applyChanges(remover);
+		manager.applyChange(remover);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 			manager.saveOntology(ontology, outputStream);
@@ -659,13 +661,13 @@ public class OWLInteraction {
 	}
 	
 	public String removeCommentFromClass(String className, String comment) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		
 		OWLClass entity = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, className));
 		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(comment));
 		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(entity.getIRI(), anno);
 		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-		manager.applyChanges(remover);
+		manager.applyChange(remover);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 			manager.saveOntology(ontology, outputStream);
@@ -677,13 +679,13 @@ public class OWLInteraction {
 	}
 	
 	public String removeCommentFromNamedIndividual(String individual, String comment) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		
 		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, individual));
 		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(comment));
 		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(entity.getIRI(), anno);
 		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-		manager.applyChanges(remover);
+		manager.applyChange(remover);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 			manager.saveOntology(ontology, outputStream);
@@ -695,14 +697,14 @@ public class OWLInteraction {
 	}
 	
 	public String removeNamedIndividualBelongsToClass(String className, String namedIndividual) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		
 		OWLNamedIndividual ni = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual));
 		OWLClass oc = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, className));
 		
 		OWLClassAssertionAxiom  axiom = factory.getOWLClassAssertionAxiom(oc, ni);
 		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-		manager.applyChanges(remover);
+		manager.applyChange(remover);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 			manager.saveOntology(ontology, outputStream);
@@ -714,14 +716,14 @@ public class OWLInteraction {
 	}
 	
 	public String removeDataPropertyFromNamedIndividual(String namedIndividual, String dataProperty, String value) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		
 		OWLNamedIndividual ni = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual));
 		OWLDataProperty dp = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, dataProperty));
 		
 		OWLDataPropertyAssertionAxiom  axiom = factory.getOWLDataPropertyAssertionAxiom(dp, ni, value);
 		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-		manager.applyChanges(remover);
+		manager.applyChange(remover);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 			manager.saveOntology(ontology, outputStream);
@@ -733,7 +735,7 @@ public class OWLInteraction {
 	}
 	
 	public String removeObjectPropertyFrom2NamedIndividuals(String objectProperty, String namedIndividual1, String namedIndividual2) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		
 		OWLNamedIndividual ni1 = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual1));
 		OWLNamedIndividual ni2 = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, namedIndividual2));
@@ -741,7 +743,7 @@ public class OWLInteraction {
 		
 		OWLObjectPropertyAssertionAxiom  axiom = factory.getOWLObjectPropertyAssertionAxiom(op, ni1, ni2);
 		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-		manager.applyChanges(remover);
+		manager.applyChange(remover);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 			manager.saveOntology(ontology, outputStream);
@@ -760,13 +762,13 @@ public class OWLInteraction {
 	 * @since 0.3
 	 */
 	public String removeCommentFromDataProperty(String dataProperty, String comment) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		
 		OWLDataProperty entity = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, dataProperty));
 		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(comment));
 		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(entity.getIRI(), anno);
 		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-		manager.applyChanges(remover);
+		manager.applyChange(remover);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 			manager.saveOntology(ontology, outputStream);
@@ -785,13 +787,13 @@ public class OWLInteraction {
 	 * @since 0.3
 	 */
 	public String removeCommentFromObjectProperty(String objectProperty, String comment) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 		OWLAnnotation anno = factory.getOWLAnnotation(factory.getRDFSComment(),factory.getOWLLiteral(comment));
 		OWLAxiom axiom = factory.getOWLAnnotationAssertionAxiom(entity.getIRI(), anno);
 		RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-		manager.applyChanges(remover);
+		manager.applyChange(remover);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 			manager.saveOntology(ontology, outputStream);
@@ -811,11 +813,11 @@ public class OWLInteraction {
 	 */
 	public String removeObjectPropertyIsTransitive(String objectProperty) {
 		if(getObjectPropertyIsTransitive(objectProperty)) {
-			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 			OWLAxiom axiom = factory.getOWLTransitiveObjectPropertyAxiom(entity);
 			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-			manager.applyChanges(remover);
+			manager.applyChange(remover);
 		}
 		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -836,11 +838,11 @@ public class OWLInteraction {
 	 */
 	public String removeObjectPropertyIsAsymmetric(String objectProperty) {
 		if(getObjectPropertyIsAsymmetric(objectProperty)) {
-			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 			OWLAxiom axiom = factory.getOWLAsymmetricObjectPropertyAxiom(entity);
 			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-			manager.applyChanges(remover);
+			manager.applyChange(remover);
 		}
 		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -861,11 +863,11 @@ public class OWLInteraction {
 	 */
 	public String removeObjectPropertyIsSymmetric(String objectProperty) {
 		if(getObjectPropertyIsSymmetric(objectProperty)) {
-			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 			OWLAxiom axiom = factory.getOWLSymmetricObjectPropertyAxiom(entity);
 			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-			manager.applyChanges(remover);
+			manager.applyChange(remover);
 		}
 	
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -886,11 +888,11 @@ public class OWLInteraction {
 	 */
 	public String removeObjectPropertyIsReflexive(String objectProperty) {
 		if(getObjectPropertyIsReflexive(objectProperty)) {
-			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 			OWLAxiom axiom = factory.getOWLReflexiveObjectPropertyAxiom(entity);
 			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-			manager.applyChanges(remover);
+			manager.applyChange(remover);
 		}
 		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -911,11 +913,11 @@ public class OWLInteraction {
 	 */
 	public String removeObjectPropertyIsIrreflexive(String objectProperty) {
 		if(getObjectPropertyIsIrreflexive(objectProperty)) {
-			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 			OWLAxiom axiom = factory.getOWLIrreflexiveObjectPropertyAxiom(entity);
 			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-			manager.applyChanges(remover);
+			manager.applyChange(remover);
 		}
 		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -936,11 +938,11 @@ public class OWLInteraction {
 	 */
 	public String removeObjectPropertyIsFunctional(String objectProperty) {
 		if(getObjectPropertyIsFunctional(objectProperty)) {
-			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 			OWLAxiom axiom = factory.getOWLFunctionalObjectPropertyAxiom(entity);
 			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-			manager.applyChanges(remover);
+			manager.applyChange(remover);
 		}
 		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -961,11 +963,11 @@ public class OWLInteraction {
 	 */
 	public String removeObjectPropertyIsInverseFunctional(String objectProperty) {
 		if(getObjectPropertyIsInverseFunctional(objectProperty)) {	
-			String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+			String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 			OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, objectProperty));
 			OWLAxiom axiom = factory.getOWLInverseFunctionalObjectPropertyAxiom(entity);
 			RemoveAxiom remover = new RemoveAxiom(ontology, axiom);
-			manager.applyChanges(remover);
+			manager.applyChange(remover);
 		}
 		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -981,7 +983,7 @@ public class OWLInteraction {
 	
 	// FUNCTIONS THAT CHANGE THINGS
 	public String changeClassName(String oldName, String newName) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLEntityRenamer renamer = new OWLEntityRenamer(manager,Collections.singleton(ontology));
 		OWLClass entity = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, oldName));
 		
@@ -1003,7 +1005,7 @@ public class OWLInteraction {
 	}
 	
 	public String changeNamedIndividualName(String oldName, String newName) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLEntityRenamer renamer = new OWLEntityRenamer(manager,Collections.singleton(ontology));
 		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, oldName));
 		
@@ -1025,7 +1027,7 @@ public class OWLInteraction {
 	}
 	
 	public String changeDataPropertyName(String oldName, String newName) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLEntityRenamer renamer = new OWLEntityRenamer(manager,Collections.singleton(ontology));
 		OWLDataProperty entity = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, oldName));
 		
@@ -1047,7 +1049,7 @@ public class OWLInteraction {
 	}
 	
 	public String changeObjectPropertyName(String oldName, String newName) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLEntityRenamer renamer = new OWLEntityRenamer(manager,Collections.singleton(ontology));
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, oldName));
 		
@@ -1080,7 +1082,7 @@ public class OWLInteraction {
 	 */
 	public List<String> getClasses(){
 		List<OWLClass> classes = new ArrayList<>();
-		ontology.classesInSignature().forEach(classes::add);
+		ontology.getClassesInSignature().forEach(classes::add);
 		
 		List<String> classesNames = new ArrayList<>();
 		for(OWLClass c : classes)
@@ -1095,7 +1097,7 @@ public class OWLInteraction {
 	 */
 	public List<String> getNamedIndividuals(){
 		List<OWLNamedIndividual> individuals = new ArrayList<>();
-		ontology.individualsInSignature().forEach(individuals::add);
+		ontology.getIndividualsInSignature().forEach(individuals::add);
 		
 		List<String> individualsNames = new ArrayList<>();
 		for(OWLNamedIndividual i : individuals)
@@ -1110,7 +1112,7 @@ public class OWLInteraction {
 	 */
 	public List<String> getDataProperties(){
 		List<OWLDataProperty> properties = new ArrayList<>();
-		ontology.dataPropertiesInSignature().forEach(properties::add);
+		ontology.getDataPropertiesInSignature().forEach(properties::add);
 		
 		List<String> propertiesNames = new ArrayList<>();
 		for(OWLDataProperty p : properties)
@@ -1126,7 +1128,7 @@ public class OWLInteraction {
 	 */
 	public List<String> getObjectProperties(){
 		List<OWLObjectProperty> properties = new ArrayList<>();
-		ontology.objectPropertiesInSignature().forEach(properties::add);
+		ontology.getObjectPropertiesInSignature().forEach(properties::add);
 		
 		List<String> propertiesNames = new ArrayList<>();
 		for(OWLObjectProperty p : properties)
@@ -1136,56 +1138,57 @@ public class OWLInteraction {
 	
 	
 	public List<String> getClassComments(String name){
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLClass entity = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, name));
-		Stream<OWLAnnotation> anotations = EntitySearcher.getAnnotations(entity.getIRI(), ontology);
+		Collection<OWLAnnotation> anotations = EntitySearcher.getAnnotations(entity.getIRI(), ontology);
 		List<String> comments = new ArrayList<>();
-		for(OWLAnnotation s : anotations.toList())
-			comments.add(s.getValue().toString().substring(s.getValue().toString().indexOf("\"")+1, s.getValue().toString().indexOf("\"^^")));
+		for(OWLAnnotation s : anotations) {
+			comments.add(s.toString().substring(s.toString().indexOf("\"")+1, s.toString().indexOf("\"^^")));
+		}
 		return comments;
 	}
 	
 	public List<String> getIndividualComments(String name){
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, name));
-		Stream<OWLAnnotation> anotations = EntitySearcher.getAnnotations(entity.getIRI(), ontology);
+		Collection<OWLAnnotation> anotations = EntitySearcher.getAnnotations(entity.getIRI(), ontology);
 		List<String> comments = new ArrayList<>();
-		for(OWLAnnotation s : anotations.toList())
-			comments.add(s.getValue().toString().substring(s.getValue().toString().indexOf("\"")+1, s.getValue().toString().indexOf("\"^^")));
+		for(OWLAnnotation s : anotations)
+			comments.add(s.toString().substring(s.toString().indexOf("\"")+1, s.toString().indexOf("\"^^")));
 		return comments;
 	}
 	
 	public List<String> getDataPropertyComments(String name){
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLDataProperty entity = factory.getOWLEntity(EntityType.DATA_PROPERTY, IRI.create(prefix, name));
-		Stream<OWLAnnotation> anotations = EntitySearcher.getAnnotations(entity.getIRI(), ontology);
+		Collection<OWLAnnotation> anotations = EntitySearcher.getAnnotations(entity.getIRI(), ontology);
 		List<String> comments = new ArrayList<>();
-		for(OWLAnnotation s : anotations.toList())
-			comments.add(s.getValue().toString().substring(s.getValue().toString().indexOf("\"")+1, s.getValue().toString().indexOf("\"^^")));
+		for(OWLAnnotation s : anotations)
+			comments.add(s.toString().substring(s.toString().indexOf("\"")+1, s.toString().indexOf("\"^^")));
 		return comments;
 	}
 	
 	public List<String> getObjectPropertyComments(String name){
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
-		Stream<OWLAnnotation> anotations = EntitySearcher.getAnnotations(entity.getIRI(), ontology);
+		Collection<OWLAnnotation> anotations = EntitySearcher.getAnnotations(entity.getIRI(), ontology);
 		List<String> comments = new ArrayList<>();
-		for(OWLAnnotation s : anotations.toList())
-			comments.add(s.getValue().toString().substring(s.getValue().toString().indexOf("\"")+1, s.getValue().toString().indexOf("\"^^")));
+		for(OWLAnnotation s : anotations)
+			comments.add(s.toString().substring(s.toString().indexOf("\"")+1, s.toString().indexOf("\"^^")));
 		return comments;
 	}
 	
 	public List<String> getParentClasses(String name){;
-		String prefix = format.asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLClass entity = factory.getOWLEntity(EntityType.CLASS, IRI.create(prefix, name));
 		List<String> parents = new ArrayList<>();
-		for(OWLClassExpression s : EntitySearcher.getSuperClasses(entity, ontology).toList())
+		for(OWLClassExpression s : EntitySearcher.getSuperClasses(entity, ontology))
 			parents.add(s.asOWLClass().getIRI().getFragment());
 		return parents;
 	}
 	
 	public String getNamedIndividualClass(String name){
-		String prefix = format.asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, name));		
 		for (OWLClassAssertionAxiom ax: ontology.getClassAssertionAxioms(entity)) {
 			String fullString = ax.toString();
@@ -1196,21 +1199,22 @@ public class OWLInteraction {
 	}
 	
 	public Map<String, String> getNamedIndividualDataProperties(String name){
-		String prefix = format.asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, name));
 		Map<String,String> map = new HashMap<>();		
 		for (OWLDataPropertyAssertionAxiom ax: ontology.getDataPropertyAssertionAxioms(entity)) {
-			String pValue = ax.getObject().toString();
+			String pName = ax.toString();
+			pName = pName.substring(pName.indexOf("#") + 1, pName.indexOf(">"));
+			String pValue = ax.toString();
 			pValue = pValue.substring(pValue.indexOf("\"") + 1, pValue.indexOf("\"^^"));
-			String pName = ax.getProperty().toString();
-			pName = pName.substring(pName.indexOf("#") + 1, pName.length()-1);
+			
 		    map.put(pName, pValue);
 		}
 		return map;
 	}
 	
 	public Map<String, String> getNamedIndividualObjectProperties(String name){
-		String prefix = format.asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLNamedIndividual entity = factory.getOWLEntity(EntityType.NAMED_INDIVIDUAL, IRI.create(prefix, name));
 		Map<String,String> map = new HashMap<>();		
 		for (OWLObjectPropertyAssertionAxiom ax: ontology.getObjectPropertyAssertionAxioms(entity)) {
@@ -1225,60 +1229,68 @@ public class OWLInteraction {
 	
 	
 	public boolean getObjectPropertyIsTransitive(String name) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
 		OWLAxiom axiom = factory.getOWLTransitiveObjectPropertyAxiom(entity);
-		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+		return EntitySearcher.containsAxiom(axiom, ontology, false);
 	}
 	
 	public boolean getObjectPropertyIsAsymmetric(String name) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
 		OWLAxiom axiom = factory.getOWLAsymmetricObjectPropertyAxiom(entity);
-		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+		return EntitySearcher.containsAxiom(axiom, ontology, false);
 	}
 	
 	public boolean getObjectPropertyIsSymmetric(String name) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
 		OWLAxiom axiom = factory.getOWLSymmetricObjectPropertyAxiom(entity);
-		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+		return EntitySearcher.containsAxiom(axiom, ontology, false);
 	}
 	
 	public boolean getObjectPropertyIsReflexive(String name) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
 		OWLAxiom axiom = factory.getOWLReflexiveObjectPropertyAxiom(entity);
-		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+		return EntitySearcher.containsAxiom(axiom, ontology, false);
 	}
 	
 	public boolean getObjectPropertyIsIrreflexive(String name) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
 		OWLAxiom axiom = factory.getOWLIrreflexiveObjectPropertyAxiom(entity);
-		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+		return EntitySearcher.containsAxiom(axiom, ontology, false);
 	}
 	
 	public boolean getObjectPropertyIsFunctional(String name) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
 		OWLAxiom axiom = factory.getOWLFunctionalObjectPropertyAxiom(entity);
-		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+		return EntitySearcher.containsAxiom(axiom, ontology, false);
 	}
 	
 	public boolean getObjectPropertyIsInverseFunctional(String name) {
-		String prefix = format.	asPrefixOWLDocumentFormat().getDefaultPrefix();
+		String prefix = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
 		OWLObjectProperty entity = factory.getOWLEntity(EntityType.OBJECT_PROPERTY, IRI.create(prefix, name));
 		OWLAxiom axiom = factory.getOWLInverseFunctionalObjectPropertyAxiom(entity);
-		return EntitySearcher.containsAxiom(axiom, ontology, Imports.EXCLUDED);
+		return EntitySearcher.containsAxiom(axiom, ontology, false);
 	}
 	
 	//Tests
 	public static void main(String[] args) {
 		try {
 			OWLInteraction test = new OWLInteraction(new FileInputStream("test.owl"));
-			String result = "";
-			result = test.createClass("Animal");
+			//String result = "";
+			test.createClass("Human");
+			test.addCommentAnnotationToClass("Homo sapiens sapiens", "Human");
+			test.createDataProperty("familyName");
+			test.createNamedIndividual("zane");
+			test.addDataPropertyToNamedIndividual("zane", "familyName", "Holm");
+			System.out.println(test.getNamedIndividualDataProperties("zane"));
+			//System.out.println(test.getClassComments("Human"));
+			//System.out.println(test.createClass("Animal"));
+			/*result = test.createClass("Animal");
 			result = test.createClass("Superhero");
 			result = test.createClass("Human");
 			result = test.createClass("Person");
@@ -1296,9 +1308,10 @@ public class OWLInteraction {
 			result = test.addObjectPropertyIsInverseFunctional("hasFather");
 			result = test.addObjectPropertyIsAsymmetric("hasFather");
 			result = test.addObjectPropertyIsFunctional("hasFather");
+			
 			result = test.addObjectPropertyTo2NamedIndividuals("hasFather","zane","john");
-			//result = test.createObjectProperty("name");
-			//result = test.addObjectPropertyIsTransitive("name");
+			result = test.createObjectProperty("name");
+			result = test.addObjectPropertyIsTransitive("name");*/
 			/*System.out.println(test.removeObjectPropertyIsTransitive("name"));
 			System.out.println(test.removeObjectPropertyIsTransitive("name"));
 			System.out.println(test.removeObjectPropertyIsTransitive("name"));
@@ -1308,13 +1321,13 @@ public class OWLInteraction {
 			System.out.println(test.removeObjectPropertyIsTransitive("name"));*/
 			
 			//System.out.println(test.addCommentAnnotationToObjectProperty("name", "boop"));
-			test.createDataProperty("size");
+			/*test.createDataProperty("size");
 			result = test.addDataPropertyToNamedIndividual("zane", "size", "1.5");
 			result = test.addNamedIndividualBelongsToClass("Person", "zane");
-			System.out.println(result);
-			test.getNamedIndividualDataProperties("zane");
+			System.out.println(result);*/
+			/*test.getNamedIndividualDataProperties("zane");
 			test.getNamedIndividualObjectProperties("zane");
-			test.getNamedIndividualClass("zane");
+			test.getNamedIndividualClass("zane");*/
 			//result = test.changeDataPropertyName("name", "nome");
 			//result = test.addCommentAnnotationToDataProperty("this is a comment", "name");
 			//System.out.println(result);

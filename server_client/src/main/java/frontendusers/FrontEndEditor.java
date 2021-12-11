@@ -878,7 +878,7 @@ public class FrontEndEditor extends FrontEndUser{
 		try {
 			String addDataPropertyIsOn = objectMapper.readTree(body)
 					.get("data")
-					.get("changeDataProperty")
+					.get("addDataProperty")
 					.asText();
 			if(addDataPropertyIsOn.equals("on")) {
 				dataPropertyToAdd = objectMapper.readTree(body)
@@ -920,7 +920,7 @@ public class FrontEndEditor extends FrontEndUser{
 		try {
 			String addObjectPropertyIsOn = objectMapper.readTree(body)
 					.get("data")
-					.get("changeDataProperty")
+					.get("addObjectProperty")
 					.asText();
 			if(addObjectPropertyIsOn.equals("on")) {
 				objectPropertyToAdd = objectMapper.readTree(body)

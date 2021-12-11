@@ -282,13 +282,13 @@ public class Editor {
 		OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
 		String content = null;
 		if(!deleteComment && newComment != null) {
-			content = owl.addCommentAnnotationToClass(oldName, newComment);
+			content = owl.addCommentAnnotationToClass(newComment, oldName);
 		}
 		else if(newComment != null) {
 			content = owl.removeCommentFromClass(oldName, owl.getClassComments(oldName).get(0));
-			content = owl.addCommentAnnotationToClass(oldName, newComment);
+			content = owl.addCommentAnnotationToClass(newComment, oldName);
 		}
-		else if(classHasComments(oldName)) {
+		else if(classHasComments(oldName) && deleteComment) {
 			content = owl.removeCommentFromClass(oldName, owl.getClassComments(oldName).get(0));
 		}
 		
@@ -373,16 +373,15 @@ public class Editor {
 		OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
 		String content = null;
 		if(!deleteComment && newComment != null) {
-			content = owl.addCommentAnnotationToNamedIndividual(oldName, newComment);
+			content = owl.addCommentAnnotationToNamedIndividual(newComment, oldName);
 		}
 		else if(newComment != null) {
 			content = owl.removeCommentFromNamedIndividual(oldName, owl.getClassComments(oldName).get(0));
-			content = owl.addCommentAnnotationToNamedIndividual(oldName, newComment);
+			content = owl.addCommentAnnotationToNamedIndividual(newComment, oldName);
 		}
-		else if(individualHasComments(oldName)) {
+		else if(individualHasComments(oldName) && deleteComment) {
 			content = owl.removeCommentFromNamedIndividual(oldName, owl.getClassComments(oldName).get(0));
 		}
-		
 		
 		if(removeParent) {
 			content = owl.removeNamedIndividualBelongsToClass(oldName, owl.getNamedIndividualClass(oldName));
@@ -392,6 +391,7 @@ public class Editor {
 			content = owl.addNamedIndividualBelongsToClass(oldName, parentClass);
 		}
 		
+		
 		if(dataPropertyToAdd != null && newValue != null) {
 			content = owl.addDataPropertyToNamedIndividual(oldName, dataPropertyToAdd, newValue);
 		}
@@ -400,6 +400,10 @@ public class Editor {
 			content = owl.addObjectPropertyTo2NamedIndividuals(objectPropertyToAdd, oldName, newConnectedIndividual);
 		}
 		
+		System.out.println("hello?");
+		System.out.println(changeDataProperty);
+		System.out.println(oldValue);
+		System.out.println(changeValue);
 		if(changeDataProperty != null && oldValue != null && changeValue != null) {
 			content = owl.removeDataPropertyFromNamedIndividual(oldName, changeDataProperty, changeValue);
 			content = owl.addDataPropertyToNamedIndividual(oldName, changeDataProperty, changeValue);
@@ -485,12 +489,12 @@ public class Editor {
 		OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
 		String content = null;
 		if(!deleteComment && newComment != null)
-			content = owl.addCommentAnnotationToDataProperty(oldName, newComment);
+			content = owl.addCommentAnnotationToDataProperty(newComment, oldName);
 		else if(newComment != null) {
 			content = owl.removeCommentFromDataProperty(oldName, owl.getDataPropertyComments(oldName).get(0));
-			content = owl.addCommentAnnotationToDataProperty(oldName, newComment);
+			content = owl.addCommentAnnotationToDataProperty(newComment, oldName);
 		}
-		else if(dataPropertyHasComments(oldName))
+		else if(dataPropertyHasComments(oldName) && deleteComment)
 			content = owl.removeCommentFromDataProperty(oldName, owl.getDataPropertyComments(oldName).get(0));
 		
 		
@@ -685,13 +689,13 @@ public class Editor {
 		String content = null;
 
 		if(!deleteComment && newComment != null) {
-			content = owl.addCommentAnnotationToObjectProperty(oldName, newComment);
+			content = owl.addCommentAnnotationToObjectProperty(newComment, oldName);
 		}
 		else if(newComment != null) {
 			content = owl.removeCommentFromObjectProperty(oldName, owl.getDataPropertyComments(oldName).get(0));
-			content = owl.addCommentAnnotationToObjectProperty(oldName, newComment);
+			content = owl.addCommentAnnotationToObjectProperty(newComment, oldName);
 		}
-		else if(objectPropertyHasComments(oldName))
+		else if(objectPropertyHasComments(oldName) && deleteComment)
 			content = owl.removeCommentFromObjectProperty(oldName, owl.getDataPropertyComments(oldName).get(0));
 
 		if(newName != null)
