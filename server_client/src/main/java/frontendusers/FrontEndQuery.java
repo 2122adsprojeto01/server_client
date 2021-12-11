@@ -89,7 +89,7 @@ public class FrontEndQuery extends FrontEndUser{
 						.asText();
 				String operator2 = objectMapper.readTree(body)
 						.get("data")
-						.get("operator1")
+						.get("operator2")
 						.asText();		
 				String value2 = objectMapper.readTree(body)
 						.get("data")
@@ -104,6 +104,7 @@ public class FrontEndQuery extends FrontEndUser{
 			queryString = Query.prepareQuery(classToQuery, dataProperty1, operator1, value1);
 		
 		List<String> answers = Query.getQueryResult(queryString);
+		System.out.println("number of answers: " + answers.size());
 		if(answers == null || answers.size() == 0) {
 			params.add(new BasicNameValuePair("multiple_answers", "false"));
 			params.add(new BasicNameValuePair("answers", ""));
@@ -115,7 +116,7 @@ public class FrontEndQuery extends FrontEndUser{
 		else {
 			params.add(new BasicNameValuePair("multiple_answers", "true"));
 			for(String s : answers)
-				params.add(new BasicNameValuePair("classes", s));
+				params.add(new BasicNameValuePair("answers", s));
 		}
 		
 		
@@ -145,6 +146,7 @@ public class FrontEndQuery extends FrontEndUser{
 		
 		System.out.println("reached before trying to get the results");
 		List<String> answers = Query.getQueryResult(queryString);
+		System.out.println("Number os answers: " + answers.size());
 		if(answers == null || answers.size() == 0) {
 			params.add(new BasicNameValuePair("multiple_answers", "false"));
 			params.add(new BasicNameValuePair("answers", ""));
@@ -156,7 +158,7 @@ public class FrontEndQuery extends FrontEndUser{
 		else {
 			params.add(new BasicNameValuePair("multiple_answers", "true"));
 			for(String s : answers)
-				params.add(new BasicNameValuePair("classes", s));
+				params.add(new BasicNameValuePair("answers", s));
 		}
 		
 		HttpPost httppost = new HttpPost(uri+"/server_client_post");
