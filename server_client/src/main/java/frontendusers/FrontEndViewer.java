@@ -14,6 +14,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import ads.users.Viewer;
 
@@ -23,7 +24,7 @@ public class FrontEndViewer extends FrontEndUser{
 		super(uri);
 	}
 	
-	public void getViewPageContent(String body) throws ClientProtocolException, IOException {
+	public void getViewPageContent(String body) throws ClientProtocolException, IOException, OWLOntologyCreationException {
 		String id = objectMapper.readTree(body)
 				.get("client_id")
 				.asText();
