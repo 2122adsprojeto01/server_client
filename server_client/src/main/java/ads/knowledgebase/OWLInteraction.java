@@ -69,7 +69,9 @@ public class OWLInteraction {
 		format = manager.getOntologyFormat(ontology);
 	}
 	
-	
+	public OWLOntology getOntology() {
+		return ontology;
+	}
 	
 	
 	
