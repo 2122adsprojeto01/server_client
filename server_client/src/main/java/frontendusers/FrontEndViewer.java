@@ -23,6 +23,7 @@ public class FrontEndViewer extends FrontEndUser{
 		super(uri);
 	}
 	
+
 	public void getViewPageContent(String body) {
 		try {
 			String id = objectMapper.readTree(body)
@@ -52,6 +53,7 @@ public class FrontEndViewer extends FrontEndUser{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 
 }

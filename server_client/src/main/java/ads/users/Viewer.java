@@ -25,6 +25,7 @@ import ads.knowledgebase.OWLInteraction;
 public class Viewer {
 private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.ini");
 	
+
 	public static JSONArray getClasses() throws OWLOntologyCreationException {
 		String file = repository.getOwlFileName();
 		OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
@@ -33,6 +34,7 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 		List<String> classes = owl.getClasses(); //Lista de classes no owl
 		for(String s : classes) { //Para cada classe
 			JSONObject newClass = new JSONObject().put("name", s); //Cria objeto da classe e adiciona o par com nome: <nome da classe>
+
 			JSONArray parentClasses = new JSONArray();
 			if(!owl.getParentClasses(s).isEmpty()){ //Se tiver parent classes
 				for(String t : owl.getParentClasses(s)){ //Para cada parent class
@@ -52,6 +54,7 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 		return jsonClasses; //retorna classes: <Array com as classes>
 	}
 	public static JSONArray getIndividuals() throws OWLOntologyCreationException {
+
 		String file = repository.getOwlFileName();
 		OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
 		JSONArray jsonIndividuals = new JSONArray();
@@ -60,6 +63,7 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 		for(String i : individuals){ //Para cada individuo
 			String ind = owl.getNamedIndividualClass(i); //Nome da classe a que pertence
 			JSONObject jsonIndividuo = new JSONObject().put("name", i).put("classe", ind); //Adiciona os pares name: <nome do individuo>, classe: <nome da classe a que pertence>
+
 			JSONArray properties = new JSONArray();
 			//JSONArray indDataProps = new JSONArray(); //Array que irá conter as data properties do individuo
 			//JSONArray indObjProps = new JSONArray(); //Array que irá conter as object properties do individuo
@@ -97,16 +101,19 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 		
 	}
 	public static JSONArray getObjectProperties() throws OWLOntologyCreationException {
+
 		String file = repository.getOwlFileName();
 		OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
 		JSONArray jsonObjProps = new JSONArray();
 
 		List<String> objProps = owl.getObjectProperties();
 		for(String s : objProps){
+
 			JSONObject jsonObj = new JSONObject();
 			
 			
 			jsonObj.put("name", s);
+
 			jsonObj.put("transitive", owl.getObjectPropertyIsTransitive(s));
 			jsonObj.put("symmetric", owl.getObjectPropertyIsSymmetric(s));
 			jsonObj.put("reflexive", owl.getObjectPropertyIsReflexive(s));
@@ -118,7 +125,9 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 			jsonObjProps.put(jsonObj);
 		}
 		
+
 		return jsonObjProps;
+
 	}
 	
 	/*public static JSON getOntologyClassesAndIndividuals() {
