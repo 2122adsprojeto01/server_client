@@ -1,19 +1,10 @@
 package ads.users;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -33,25 +24,24 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 
 		List<String> classes = owl.getClasses(); //Lista de classes no owl
 		for(String s : classes) { //Para cada classe
-			JSONObject newClass = new JSONObject().put("name", s); //Cria objeto da classe e adiciona o par com nome: <nome da classe>
+			//JSONObject newClass = new JSONObject().put("name", s); //Cria objeto da classe e adiciona o par com nome: <nome da classe>
 
-			JSONArray parentClasses = new JSONArray();
+			//JSONArray parentClasses = new JSONArray();
 			if(!owl.getParentClasses(s).isEmpty()){ //Se tiver parent classes
 				for(String t : owl.getParentClasses(s)){ //Para cada parent class
 					JSONObject newParentClass = new JSONObject().put("parentClass", t).put("name", s);
-					parentClasses.put(newParentClass);
-					System.out.println(t);
+					jsonClasses.put(newParentClass);
 				}
 			}
 			else {
-				JSONObject newParentClass = new JSONObject().put("parentClass", "");
-				parentClasses.put(newParentClass);
+				JSONObject newParentClass = new JSONObject().put("parentClass", "").put("name", s);
+				jsonClasses.put(newParentClass);
 			}
-			newClass.put("_children", parentClasses); //adiciona o par parentClass: <nome da parent class>
-			jsonClasses.put(newClass); //Acrescenta a classe ao Array
+			//newClass.put("_children", parentClasses); //adiciona o par parentClass: <nome da parent class>
+			//jsonClasses.put(newClass); //Acrescenta a classe ao Array
 		}
 
-		return jsonClasses; //retorna classes: <Array com as classes>
+		return jsonClasses; //retorna <Array com as classes>
 	}
 	public static JSONArray getIndividuals() throws OWLOntologyCreationException {
 
@@ -62,9 +52,9 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 		List<String> individuals = owl.getNamedIndividuals();
 		for(String i : individuals){ //Para cada individuo
 			String ind = owl.getNamedIndividualClass(i); //Nome da classe a que pertence
-			JSONObject jsonIndividuo = new JSONObject().put("name", i).put("classe", ind); //Adiciona os pares name: <nome do individuo>, classe: <nome da classe a que pertence>
+			//JSONObject jsonIndividuo = new JSONObject().put("name", i).put("classe", ind); //Adiciona os pares name: <nome do individuo>, classe: <nome da classe a que pertence>
 
-			JSONArray properties = new JSONArray();
+			//JSONArray properties = new JSONArray();
 			//JSONArray indDataProps = new JSONArray(); //Array que irá conter as data properties do individuo
 			//JSONArray indObjProps = new JSONArray(); //Array que irá conter as object properties do individuo
 
@@ -77,7 +67,8 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 				property.put("propertyName", entry.getKey());
 				property.put("propertyValue", entry.getValue());
 				//indDataProps.put(new JSONObject().put(entry.getKey(), entry.getValue())); //Adiciona ao array o par <key>: <valor>
-				properties.put(property);
+				//properties.put(property);
+				jsonIndividuals.put(property);
 			}
 			Map<String,String> aux2 = owl.getNamedIndividualObjectProperties(i);
 			for (Map.Entry<String, String> entry : aux2.entrySet()) {
@@ -88,16 +79,23 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 				property.put("propertyName", entry.getKey());
 				property.put("propertyValue", entry.getValue());
 				//indObjProps.put(new JSONObject().put(entry.getKey(), entry.getValue()));
-				properties.put(property);
+				//properties.put(property);
+				jsonIndividuals.put(property);
+			}
+			if(aux.isEmpty() && aux2.isEmpty()) {
+				JSONObject property = new JSONObject();
+				property.put("name", i);
+				property.put("classe", ind);
+				jsonIndividuals.put(property);
 			}
 
 			//jsonIndividuo.put("dataProperties", indDataProps); //acrescenta ao individuo as data properties
 			//jsonIndividuo.put("objectProperties", indObjProps); //acrescenta ao individuo as object properties
-			jsonIndividuo.put("_children", properties);
-			jsonIndividuals.put(jsonIndividuo); //acrescenta o individuo a lista de individuos
+			//jsonIndividuo.put("_children", properties);
+			//jsonIndividuals.put(jsonIndividuo); //acrescenta o individuo a lista de individuos
 		}
 
-		return jsonIndividuals; //retorna individuals: <Array com individuos>
+		return jsonIndividuals; //<Array com individuos>
 		
 	}
 	public static JSONArray getObjectProperties() throws OWLOntologyCreationException {
