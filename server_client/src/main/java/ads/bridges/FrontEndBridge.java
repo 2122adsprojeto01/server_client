@@ -19,15 +19,16 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ads.configurations.SiteConfigurations;
+import ads.frontendusers.FrontEndCurator;
+import ads.frontendusers.FrontEndEditor;
+import ads.frontendusers.FrontEndQuery;
+import ads.frontendusers.FrontEndViewer;
 import ads.users.Curator;
-import frontendusers.FrontEndCurator;
-import frontendusers.FrontEndEditor;
-import frontendusers.FrontEndQuery;
-import frontendusers.FrontEndViewer;
 
 /**
  * A class that makes the bridge between the client requests and the appropriate frontenduser class function
@@ -63,8 +64,9 @@ public class FrontEndBridge {
 	 * It figures out what that message is asking and calls the appropriate 
 	 * @throws IOException
 	 * @throws InterruptedException
+	 * @throws OWLOntologyCreationException
 	 */
-	public void connectJavaClient() throws IOException, InterruptedException {
+	public void connectJavaClient() throws IOException, InterruptedException, OWLOntologyCreationException {
 		HttpClient client = HttpClient.newHttpClient();
 		HttpRequest request = HttpRequest.newBuilder()
 			      .uri(URI.create(uri+"/server_client"))

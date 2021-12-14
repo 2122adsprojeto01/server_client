@@ -47,6 +47,17 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 				JSONObject newParentClass = new JSONObject().put("parentClass", "");
 				parentClasses.put(newParentClass);
 			}
+			
+			String comments = "";
+			if(owl.getClassComments(s).size()>0){
+				for(String d : owl.getClassComments(s)){
+					comments += d+"\n";
+				}
+				comments = comments.substring(0, comments.length()-1);
+			}
+
+			newClass.put("comments", comments);
+
 			newClass.put("_children", parentClasses); //adiciona o par parentClass: <nome da parent class>
 			jsonClasses.put(newClass); //Acrescenta a classe ao Array
 		}
@@ -77,6 +88,17 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 				property.put("propertyName", entry.getKey());
 				property.put("propertyValue", entry.getValue());
 				//indDataProps.put(new JSONObject().put(entry.getKey(), entry.getValue())); //Adiciona ao array o par <key>: <valor>
+
+				String comments = "";
+				if(owl.getDataPropertyComments(entry.getKey()).size()>0){
+					for(String d : owl.getDataPropertyComments(entry.getKey())){
+						comments += d+"\n";
+					}
+					comments = comments.substring(0, comments.length()-1);
+				}
+
+				property.put("propertyComments", comments);
+
 				properties.put(property);
 			}
 			Map<String,String> aux2 = owl.getNamedIndividualObjectProperties(i);
@@ -88,11 +110,33 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 				property.put("propertyName", entry.getKey());
 				property.put("propertyValue", entry.getValue());
 				//indObjProps.put(new JSONObject().put(entry.getKey(), entry.getValue()));
+
+				String comments = "";
+				if(owl.getDataPropertyComments(entry.getKey()).size()>0){
+					for(String d : owl.getDataPropertyComments(entry.getKey())){
+						comments += d+"\n";
+					}
+					comments = comments.substring(0, comments.length()-1);
+				}
+
+				property.put("propertyComments", comments);
+
 				properties.put(property);
 			}
 
 			//jsonIndividuo.put("dataProperties", indDataProps); //acrescenta ao individuo as data properties
 			//jsonIndividuo.put("objectProperties", indObjProps); //acrescenta ao individuo as object properties
+
+			String comments = "";
+			if(owl.getIndividualComments(i).size()>0){
+				for(String d : owl.getIndividualComments(i)){
+					comments += d+"\n";
+				}
+				comments = comments.substring(0, comments.length()-1);
+			}
+
+			jsonIndividuo.put("comments", comments);
+
 			jsonIndividuo.put("_children", properties);
 			jsonIndividuals.put(jsonIndividuo); //acrescenta o individuo a lista de individuos
 		}
@@ -121,7 +165,17 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 			jsonObj.put("inverseFunctional", owl.getObjectPropertyIsInverseFunctional(s));
 			jsonObj.put("functional", owl.getObjectPropertyIsFunctional(s));
 			jsonObj.put("asymmetric", owl.getObjectPropertyIsAsymmetric(s));
-			
+
+			String comments = "";
+			if(owl.getObjectPropertyComments(s).size()>0){
+				for(String d : owl.getObjectPropertyComments(s)){
+					comments += d+"\n";
+				}
+				comments = comments.substring(0, comments.length()-1);
+			}
+
+			jsonObj.put("comments", comments);
+
 			jsonObjProps.put(jsonObj);
 		}
 		
