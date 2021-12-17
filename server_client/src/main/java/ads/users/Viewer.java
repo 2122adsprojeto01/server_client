@@ -33,21 +33,8 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 
 		List<String> classes = owl.getClasses(); //Lista de classes no owl
 		for(String s : classes) { //Para cada classe
-			JSONObject newClass = new JSONObject().put("name", s); //Cria objeto da classe e adiciona o par com nome: <nome da classe>
+			//JSONObject newClass = new JSONObject().put("name", s); //Cria objeto da classe e adiciona o par com nome: <nome da classe>
 
-			JSONArray parentClasses = new JSONArray();
-			if(!owl.getParentClasses(s).isEmpty()){ //Se tiver parent classes
-				for(String t : owl.getParentClasses(s)){ //Para cada parent class
-					JSONObject newParentClass = new JSONObject().put("parentClass", t).put("name", s);
-					parentClasses.put(newParentClass);
-					System.out.println(t);
-				}
-			}
-			else {
-				JSONObject newParentClass = new JSONObject().put("parentClass", "");
-				parentClasses.put(newParentClass);
-			}
-			
 			String comments = "";
 			if(owl.getClassComments(s).size()>0){
 				for(String d : owl.getClassComments(s)){
@@ -55,11 +42,38 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 				}
 				comments = comments.substring(0, comments.length()-1);
 			}
+			
+			JSONArray parentClasses = new JSONArray();
+			if(!owl.getParentClasses(s).isEmpty()){ //Se tiver parent classes
+				for(String t : owl.getParentClasses(s)){ //Para cada parent class
+					JSONObject newParentClass = new JSONObject().put("parentClass", t).put("name", s);
+					
+					newParentClass.put("comments", comments);
+					
+					jsonClasses.put(newParentClass);
+					//parentClasses.put(newParentClass);
+					System.out.println(t);
+				}
+			}
+			else {
+				JSONObject newParentClass = new JSONObject().put("parentClass", "").put("name", s);
+				newParentClass.put("comments", comments);
+				jsonClasses.put(newParentClass);
+				//parentClasses.put(newParentClass);
+			}
+			
+			/*String comments = "";
+			if(owl.getClassComments(s).size()>0){
+				for(String d : owl.getClassComments(s)){
+					comments += d+"\n";
+				}
+				comments = comments.substring(0, comments.length()-1);
+			}*/
 
-			newClass.put("comments", comments);
+			//newClass.put("comments", comments);
 
-			newClass.put("_children", parentClasses); //adiciona o par parentClass: <nome da parent class>
-			jsonClasses.put(newClass); //Acrescenta a classe ao Array
+			//newClass.put("_children", parentClasses); //adiciona o par parentClass: <nome da parent class>
+			//jsonClasses.put(newClass); //Acrescenta a classe ao Array
 		}
 
 		return jsonClasses; //retorna classes: <Array com as classes>
@@ -78,10 +92,19 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 			JSONArray properties = new JSONArray();
 			//JSONArray indDataProps = new JSONArray(); //Array que irá conter as data properties do individuo
 			//JSONArray indObjProps = new JSONArray(); //Array que irá conter as object properties do individuo
+			
+			String commentsI = "";
+			if(owl.getIndividualComments(i).size()>0){
+				for(String d : owl.getIndividualComments(i)){
+					commentsI += d+"\n";
+				}
+				commentsI = commentsI.substring(0, commentsI.length()-1);
+			}
 
 			Map<String,String> aux = owl.getNamedIndividualDataProperties(i);
 			for (Map.Entry<String, String> entry : aux.entrySet()) { //Para cada Data propertie do individuo
 				JSONObject property = new JSONObject();
+				property.put("comments", commentsI);
 				property.put("name", i);
 				property.put("classe", ind);
 				property.put("propertyType", "Data Property");
@@ -99,11 +122,13 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 
 				property.put("propertyComments", comments);
 
-				properties.put(property);
+				//properties.put(property);
+				jsonIndividuals.put(property);
 			}
 			Map<String,String> aux2 = owl.getNamedIndividualObjectProperties(i);
 			for (Map.Entry<String, String> entry : aux2.entrySet()) {
 				JSONObject property = new JSONObject();
+				property.put("comments", commentsI);
 				property.put("name", i);
 				property.put("classe", ind);
 				property.put("propertyType", "Object Property");
@@ -121,13 +146,14 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 
 				property.put("propertyComments", comments);
 
-				properties.put(property);
+				//properties.put(property);
+				jsonIndividuals.put(property);
 			}
 
 			//jsonIndividuo.put("dataProperties", indDataProps); //acrescenta ao individuo as data properties
 			//jsonIndividuo.put("objectProperties", indObjProps); //acrescenta ao individuo as object properties
 
-			String comments = "";
+			/*String comments = "";
 			if(owl.getIndividualComments(i).size()>0){
 				for(String d : owl.getIndividualComments(i)){
 					comments += d+"\n";
@@ -135,11 +161,21 @@ private static RepositoryAPI repository = new GitHubRestAPI("remote_repo_config.
 				comments = comments.substring(0, comments.length()-1);
 			}
 
-			jsonIndividuo.put("comments", comments);
+			jsonIndividuo.put("comments", comments);*/
 
-			jsonIndividuo.put("_children", properties);
-			jsonIndividuals.put(jsonIndividuo); //acrescenta o individuo a lista de individuos
+			if(aux.isEmpty() && aux2.isEmpty()) {
+				JSONObject property = new JSONObject();
+				property.put("comments", commentsI);
+				property.put("name", i);
+				property.put("classe", ind);
+				jsonIndividuals.put(property);
+			}
+			
+			//jsonIndividuo.put("_children", properties);
+			//jsonIndividuals.put(jsonIndividuo); //acrescenta o individuo a lista de individuos
 		}
+		
+		
 
 		return jsonIndividuals; //retorna individuals: <Array com individuos>
 		
