@@ -44,14 +44,14 @@ public class QueryResultsTable {
 		JSONArray treatedResults = new JSONArray();
 		try {
 			String file = repository.getOwlFileName();
-			//OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
-			OWLInteraction owl = null;
+			OWLInteraction owl = new OWLInteraction(repository.getInputStreamFileFromBranch(file, repository.getMainBranchName()));
+			/*OWLInteraction owl = null;
 			try {
 				owl = new OWLInteraction(new FileInputStream(new File("ADS.owl")));
 			} catch (FileNotFoundException e6) {
 				// TODO Auto-generated catch block
 				e6.printStackTrace();
-			}
+			}*/
 			
 			
 			SQWRLQueryEngine queryEngine = SWRLAPIFactory.createSQWRLQueryEngine(owl.getOntology());
