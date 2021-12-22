@@ -27,13 +27,14 @@ import ads.configurations.SiteConfigurations;
 import ads.frontendusers.FrontEndCurator;
 import ads.frontendusers.FrontEndEditor;
 import ads.frontendusers.FrontEndQuery;
+import ads.frontendusers.FrontEndQueryResultsTable;
 import ads.frontendusers.FrontEndViewer;
 import ads.users.Curator;
 
 /**
  * A class that makes the bridge between the client requests and the appropriate frontenduser class function
  * @author Susana Polido
- * @version 0.3
+ * @version 0.4
  */
 
 public class FrontEndBridge {
@@ -43,6 +44,7 @@ public class FrontEndBridge {
 	private FrontEndEditor editor;
 	private FrontEndViewer viewer;
 	private FrontEndQuery query;
+	private FrontEndQueryResultsTable resultsTable;
 	
 	/**
 	 * Creates the object from the location of the frontend site
@@ -55,6 +57,7 @@ public class FrontEndBridge {
 		this.editor = new FrontEndEditor(uri);
 		this.viewer = new FrontEndViewer(uri);
 		this.query = new FrontEndQuery(uri);
+		this.resultsTable = new FrontEndQueryResultsTable(uri);
 	}
 	
 	
@@ -158,6 +161,9 @@ public class FrontEndBridge {
 				break;
 			case "stringQuery":
 				query.processStringQuery(body);
+				break;
+			case "stringQueryToTable":
+				resultsTable.getQueryResultAsTable(body);
 				break;
 			default:
 				unknownRequest(body);
