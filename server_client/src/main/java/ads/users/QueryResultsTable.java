@@ -64,10 +64,10 @@ public class QueryResultsTable {
 					String value = "";
 					
 					try {
-						value = results.getLiteral(i).getString();
+						value = results.getDataProperty(i).getShortName();
 					} catch (SQWRLException e) {
 						try {
-							value = results.getLiteral(i).getValue();
+							value = results.getDataProperty(i).toString();
 						} catch (SQWRLException e1) {
 							try {
 								value = results.getClass(i).getShortName();
@@ -82,10 +82,10 @@ public class QueryResultsTable {
 											value = results.getObjectProperty(i).getShortName();
 										} catch (SQWRLException e5) {
 											try {
-												value = results.getDataProperty(i).toString();
+												value = results.getLiteral(i).getValue();
 											} catch (SQWRLException e6) {
 												try {
-													value = results.getDataProperty(i).getShortName();
+													value = results.getLiteral(i).getString();
 												} catch (SQWRLException e7) {
 													value = "something went wrong";
 												}
@@ -96,7 +96,10 @@ public class QueryResultsTable {
 							}
 						}
 					}
-					result.put(column, value);
+					if(value.charAt(0) == ':')
+						result.put(column, value.substring(1));
+					else
+						result.put(column, value);
 				}
 				treatedResults.put(result);
 		    }
